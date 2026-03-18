@@ -1,264 +1,600 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SRBI — Blue Waters General Trading</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SRBI Intelligence Platform — Blue Waters</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg-deep: #0a1628; --bg-card: #111d33; --bg-card-hover: #162544; --bg-surface: #0d1f3c;
-      --text-primary: #e8ecf4; --text-secondary: #8899b4; --text-muted: #5a6d8a;
-      --accent-blue: #2d8cf0; --accent-teal: #0cc8aa; --accent-gold: #f0a830; --border: #1c2e4a;
-      --tier1: #ef4444; --tier1-bg: rgba(239,68,68,0.08); --tier1-border: rgba(239,68,68,0.25);
-      --tier2: #f59e0b; --tier2-bg: rgba(245,158,11,0.08); --tier2-border: rgba(245,158,11,0.25);
-      --tier3: #3b82f6; --tier3-bg: rgba(59,130,246,0.08); --tier3-border: rgba(59,130,246,0.25);
-      --tier4: #6b7280; --tier4-bg: rgba(107,114,128,0.08); --tier4-border: rgba(107,114,128,0.25);
-    }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg-deep); color: var(--text-primary); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-    .mono { font-family: 'DM Mono', monospace; }
-    .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0a1628 0%, #0d2847 50%, #0a1628 100%); position: relative; overflow: hidden; }
-    .login-container::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at 30% 20%, rgba(45,140,240,0.06) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(12,200,170,0.04) 0%, transparent 50%); animation: drift 20s ease-in-out infinite; }
-    @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-2%, 1%); } }
-    .login-box { position: relative; z-index: 1; width: 100%; max-width: 420px; padding: 48px 40px; background: rgba(17,29,51,0.85); border: 1px solid var(--border); border-radius: 16px; backdrop-filter: blur(20px); box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
-    .login-logo { text-align: center; margin-bottom: 32px; }
-    .login-logo .logo-mark { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .login-logo .wave-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .login-logo h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); }
-    .login-logo .subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
-    .login-divider { height: 1px; background: var(--border); margin: 24px 0; }
-    .login-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.08em; }
-    .login-input { width: 100%; padding: 14px 16px; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-    .login-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(45,140,240,0.15); }
-    .login-input::placeholder { color: var(--text-muted); }
-    .login-btn { width: 100%; padding: 14px; margin-top: 20px; background: linear-gradient(135deg, var(--accent-blue), #1a6dd4); color: white; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
-    .login-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(45,140,240,0.3); }
-    .login-error { margin-top: 12px; padding: 10px 14px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; color: #f87171; font-size: 13px; text-align: center; }
-    .login-footer { margin-top: 28px; text-align: center; font-size: 11px; color: var(--text-muted); }
-    .dossier-container { min-height: 100vh; background: var(--bg-deep); }
-    .dossier-header { background: var(--bg-surface); border-bottom: 1px solid var(--border); padding: 20px 32px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(16px); }
-    .header-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-    .header-left { display: flex; align-items: center; gap: 14px; }
-    .header-logo { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-    .header-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
-    .header-title span { color: var(--text-secondary); font-weight: 400; margin-left: 6px; }
-    .header-right { display: flex; align-items: center; gap: 20px; }
-    .header-meta { font-size: 12px; color: var(--text-muted); }
-    .header-meta strong { color: var(--text-secondary); font-weight: 500; }
-    .logout-btn { padding: 6px 14px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 12px; cursor: pointer; transition: all 0.2s; }
-    .logout-btn:hover { border-color: var(--tier1); color: var(--tier1); }
-    .hero { max-width: 1280px; margin: 0 auto; padding: 48px 32px 32px; }
-    .hero h2 { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 8px; }
-    .hero h2 .gradient-text { background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .hero .hero-sub { font-size: 15px; color: var(--text-secondary); max-width: 680px; line-height: 1.6; }
-    .stats-bar { max-width: 1280px; margin: 0 auto; padding: 0 32px 24px; display: flex; gap: 12px; flex-wrap: wrap; }
-    .stat-pill { padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
-    .stat-pill strong { color: var(--text-primary); font-weight: 600; }
-    .market-alert { max-width: 1280px; margin: 0 auto 24px; padding: 0 32px; }
-    .alert-box { padding: 16px 20px; background: rgba(240,168,48,0.06); border: 1px solid rgba(240,168,48,0.2); border-radius: 10px; display: flex; gap: 12px; align-items: flex-start; }
-    .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-    .alert-content h4 { font-size: 13px; font-weight: 600; color: var(--accent-gold); margin-bottom: 4px; }
-    .alert-content p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; }
-    .filters { max-width: 1280px; margin: 0 auto; padding: 0 32px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
-    .filter-btn { padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-    .filter-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); }
-    .filter-btn.active { background: rgba(45,140,240,0.12); border-color: var(--accent-blue); color: var(--accent-blue); }
-    .filter-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: rgba(255,255,255,0.08); font-size: 11px; margin-left: 6px; }
-    .filter-btn.active .filter-count { background: rgba(45,140,240,0.2); }
-    .companies-grid { max-width: 1280px; margin: 0 auto; padding: 0 32px 64px; display: grid; grid-template-columns: 1fr; gap: 16px; }
-    .company-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s; }
-    .company-card:hover { border-color: var(--accent-blue); box-shadow: 0 8px 32px rgba(0,0,0,0.3); transform: translateY(-2px); }
-    .card-header { padding: 20px 24px 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-    .card-title-area { flex: 1; }
-    .card-title-area h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
-    .card-title-area .card-location { font-size: 13px; color: var(--text-muted); }
-    .tier-badge { padding: 4px 10px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
-    .tier-badge.t1 { background: var(--tier1-bg); color: var(--tier1); border: 1px solid var(--tier1-border); }
-    .tier-badge.t2 { background: var(--tier2-bg); color: var(--tier2); border: 1px solid var(--tier2-border); }
-    .tier-badge.t3 { background: var(--tier3-bg); color: var(--tier3); border: 1px solid var(--tier3-border); }
-    .tier-badge.t4 { background: var(--tier4-bg); color: var(--tier4); border: 1px solid var(--tier4-border); }
-    .card-body { padding: 16px 24px 20px; }
-    .card-overview { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
-    .card-signals { display: flex; flex-direction: column; gap: 10px; }
-    .signal-row { display: flex; gap: 10px; }
-    .signal-label { flex-shrink: 0; width: 110px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
-    .signal-value { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
-    .card-divider { height: 1px; background: var(--border); margin: 14px 0; }
-    .card-footer { padding: 0 24px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-    .card-website { font-size: 12px; color: var(--accent-blue); text-decoration: none; font-family: 'DM Mono', monospace; transition: color 0.2s; }
-    .card-website:hover { color: var(--accent-teal); }
-    .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-    .card-tag { padding: 3px 8px; background: rgba(45,140,240,0.08); border: 1px solid rgba(45,140,240,0.15); border-radius: 4px; font-size: 11px; color: var(--accent-blue); font-family: 'DM Mono', monospace; }
-    @media (max-width: 768px) { .hero h2 { font-size: 24px; } .hero, .stats-bar, .filters, .companies-grid, .market-alert { padding-left: 16px; padding-right: 16px; } .dossier-header { padding: 14px 16px; } .header-meta { display: none; } .card-header { padding: 16px 16px 0; } .card-body { padding: 12px 16px 16px; } .card-footer { padding: 0 16px 16px; } .signal-label { width: 90px; } .login-box { margin: 16px; padding: 32px 24px; } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    .fade-up { animation: fadeUp 0.5s ease-out forwards; opacity: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#fafafa;color:#111;min-height:100vh;-webkit-font-smoothing:antialiased}
+.mono{font-family:'DM Mono',monospace}
+
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a1628 0%,#0d2847 50%,#0a1628 100%);position:relative;overflow:hidden}
+#login-screen::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 20%,rgba(45,140,240,.06) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(12,200,170,.04) 0%,transparent 50%);animation:drift 20s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(-2%,1%)}}
+.login-card{position:relative;z-index:1;width:100%;max-width:420px;padding:48px 40px;background:rgba(17,29,51,.85);border:1px solid rgba(255,255,255,.08);border-radius:16px;backdrop-filter:blur(20px);box-shadow:0 24px 80px rgba(0,0,0,.4)}
+.login-logo{text-align:center;margin-bottom:32px}
+.logo-mark{display:inline-flex;align-items:center;gap:10px;margin-bottom:8px}
+.wave-icon{width:36px;height:36px;background:linear-gradient(135deg,#2d8cf0,#0cc8aa);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-h1{font-size:22px;font-weight:600;letter-spacing:-.02em;color:#fff}
+.login-subtitle{font-size:13px;color:rgba(255,255,255,.45);margin-top:4px;text-align:center}
+.login-divider{height:1px;background:rgba(255,255,255,.08);margin:24px 0}
+.login-label{display:block;font-size:12px;font-weight:500;color:rgba(255,255,255,.5);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em}
+.login-input{width:100%;padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s}
+.login-input:focus{border-color:#2d8cf0;box-shadow:0 0 0 3px rgba(45,140,240,.15)}
+.login-input::placeholder{color:rgba(255,255,255,.25)}
+.login-btn{width:100%;padding:14px;margin-top:20px;background:linear-gradient(135deg,#2d8cf0,#1a6dd4);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(45,140,240,.3)}
+.login-btn:disabled{opacity:.6;cursor:not-allowed}
+.login-error{margin-top:12px;padding:10px 14px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:8px;color:#f87171;font-size:13px;text-align:center;display:none}
+.login-footer{margin-top:28px;text-align:center;font-size:11px;color:rgba(255,255,255,.25)}
+
+/* ── APP ── */
+#app-screen{display:none}
+.app-header{background:#fff;border-bottom:1px solid #e5e7eb;padding:16px 32px;position:sticky;top:0;z-index:100}
+.app-header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.app-header-left h2{font-size:15px;font-weight:600;letter-spacing:-.01em;color:#111}
+.app-header-left h1{font-size:22px;font-weight:700;letter-spacing:-.02em;color:#111;margin:2px 0}
+.app-header-left p{font-size:13px;color:#888}
+.app-header-right{display:flex;align-items:center;gap:16px;font-size:12px;color:#888}
+.signout-btn{background:none;border:1px solid #e5e7eb;padding:5px 12px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:11px;color:#888;cursor:pointer}
+.signout-btn:hover{color:#ef4444;border-color:#fca5a5}
+
+/* Methodology */
+.methodology{max-width:1100px;margin:20px auto 0;padding:0 32px}
+.methodology-box{padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;color:#64748b;line-height:1.6}
+.methodology-box strong{color:#334155}
+
+/* Market alert */
+.market-alert{max-width:1100px;margin:16px auto 0;padding:0 32px}
+.market-alert-box{padding:14px 16px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;display:flex;gap:10px;align-items:flex-start}
+.market-alert-box .alert-icon{font-size:16px;flex-shrink:0}
+.market-alert-box h4{font-size:12px;font-weight:600;color:#92400e;margin-bottom:2px}
+.market-alert-box p{font-size:12px;color:#78716c;line-height:1.5}
+
+/* Filters */
+.filters{max-width:1100px;margin:20px auto 0;padding:0 32px;display:flex;gap:6px;flex-wrap:wrap}
+.filter-btn{padding:7px 14px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#666;cursor:pointer;transition:all .15s}
+.filter-btn:hover{border-color:#2d8cf0;color:#2d8cf0}
+
+/* Cards */
+.cards{max-width:1100px;margin:16px auto 60px;padding:0 32px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:10px;overflow:hidden;transition:box-shadow .2s}
+.card:hover{box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.card.open{box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.card-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:12px;transition:background .15s}
+.card-header:hover{background:#f8fafc}
+.tier-badge{display:inline-block;padding:3px 8px;border-radius:4px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;flex-shrink:0}
+.card-name{font-size:15px;font-weight:600;color:#111;letter-spacing:-.01em}
+.card-site{font-size:11px;color:#94a3b8;font-family:'DM Mono',monospace}
+.card-funding{font-size:12px;color:#111;font-weight:500;text-align:right}
+.card-emp{font-size:11px;color:#94a3b8;text-align:right}
+.chevron{font-size:14px;color:#94a3b8;transition:transform .2s;flex-shrink:0}
+.chevron.open{transform:rotate(180deg)}
+
+/* Card body */
+.card-body{padding:0 20px 20px;border-top:2px solid #e5e7eb}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px}
+@media(max-width:768px){.grid2{grid-template-columns:1fr}}
+.block{margin-bottom:14px}
+.blk-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:6px}
+.blk-list{list-style:none;padding:0}
+.blk-list li{font-size:13px;color:#334155;line-height:1.5;padding:2px 0 2px 14px;position:relative}
+.blk-list li::before{content:'•';position:absolute;left:0;color:#cbd5e1}
+.blk-text{font-size:13px;color:#334155;line-height:1.6}
+.blk-offering{font-size:13px;color:#1e40af;line-height:1.6;font-weight:500;background:#eff6ff;padding:10px 12px;border-radius:6px;border:1px solid #bfdbfe}
+
+/* Evidence */
+.evidence{margin-top:8px;padding-left:12px;border-left:2px solid #e2e8f0}
+.ev-item{margin-bottom:6px}
+.ev-quote{font-size:12px;font-style:italic;color:#475569;line-height:1.5}
+.ev-source{font-size:11px;color:#94a3b8;font-weight:500}
+.ev-link{font-size:10px;color:#2d8cf0;text-decoration:none;margin-left:4px}
+
+/* Additional Intelligence divider */
+.new-divider{margin-top:20px;padding-top:16px;border-top:1px dashed #e2e8f0}
+.new-divider-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:12px}
+.ns-box{padding:14px 16px;border-radius:8px;margin-bottom:10px}
+.ns-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.ns-supply{background:#eff6ff;border:1px solid #bfdbfe}
+.ns-summary{background:#fffbeb;border:1px solid #fde68a}
+.ns-source{background:#f8fafc;border:1px solid #e2e8f0}
+.summary-text{font-size:13px;color:#44403c;line-height:1.6}
+
+/* Supply chain tags */
+.supply-tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600;letter-spacing:.03em;margin-right:4px;margin-bottom:4px}
+.tag-red{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.tag-green{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.tag-blue{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe}
+.tag-gray{background:#f9fafb;color:#6b7280;border:1px solid #e5e7eb}
+.tag-amber{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
+.ds{font-size:12px;color:#64748b;margin-bottom:2px}
+.ds span{font-weight:600;color:#334155}
+
+/* Sources */
+.src-list{list-style:none;padding:0}
+.src-list li{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:12px;line-height:1.5}
+.src-dot{width:6px;height:6px;border-radius:50%;background:#cbd5e1;flex-shrink:0;margin-top:6px}
+.src-tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.st-p{background:#dbeafe;color:#1d4ed8}
+.st-s{background:#e2e8f0;color:#475569}
+.st-i{background:#fef3c7;color:#92400e}
+.src-legend{margin-top:10px;padding-top:8px;border-top:1px solid #e5e7eb;font-size:10px;color:#94a3b8}
+
+@media(max-width:768px){
+  .app-header{padding:12px 16px}
+  .methodology,.market-alert,.filters,.cards{padding-left:16px;padding-right:16px}
+  .card-header{flex-wrap:wrap}
+  .login-card{margin:16px;padding:32px 24px}
+}
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect } = React;
-    const config = {
-      clientName: "Blue Waters General Trading L.L.C",
-      clientShort: "Blue Waters",
-      allowedDomains: ["@axlrate.com", "@bluewatersllcdubai.com"],
-      reportDate: "March 18, 2026",
-      companiesScanned: "~150+",
-      market: "United States",
-      builtBy: "Axlrate",
-    };
-    const companies = [
-      { id:1, name:"Baywatch Seafood Inc.", location:"Perth Amboy, NJ", website:"baywatchseafood.com", tier:1, tierLabel:"T1 \u2014 Immediate", overview:"Direct importer of frozen seafood from Asia (India, Sri Lanka, Thailand, Indonesia, Taiwan). Est. 2009. Small team serving North American market. Specializes in shrimp, squid, octopus. 2,400+ bills of lading on record. Est. revenue $50M\u2013$100M annually.", capacityGap:"Small company heavily dependent on Asian sourcing network \u2014 profile most disrupted by India tariffs. Limited supplier diversification across origins.", recentTrigger:"58% US tariff on Indian shrimp directly impacts primary sourcing region. Must diversify or absorb cost. Active import volume (~45 shipments/90 days) shows continued buying \u2014 needs alternatives now.", offeringFit:"BWG supplies vannamei (HOSO, PDTO, PD), black tiger, squid, octopus \u2014 direct product overlap. Multi-origin sourcing (Vietnam, Indonesia, Thailand) gives tariff flexibility. Container-scale with mixed SKUs.", tags:["shrimp","squid","Asia-sourced","NJ port"] },
-      { id:2, name:"Ocean Frost Corp.", location:"Newark, NJ", website:"oceanfrost.com", tier:1, tierLabel:"T1 \u2014 Immediate", overview:"Established buyer, trader, importer, and seller of frozen seafood. Strong financial position with substantial credit lines. Wide selection: shrimp, lobster, crab, scallops, squid, octopus, mussels, clams, finned fish.", capacityGap:"Constantly seeking new products and markets. Mid-size importer with dual role as importer and distributor. Needs competitive multi-origin sourcing.", recentTrigger:"India tariff disruption forces shrimp sourcing recalibration. Product breadth means multiple lines overlap with BWG catalogue.", offeringFit:"BWG covers nearly their entire frozen portfolio \u2014 vannamei, black tiger, squid (whole/tubes/rings), octopus, mussels, scallops. Competitive multi-origin pricing and mixed containers.", tags:["full-line","importer-distributor","NJ port"] },
-      { id:3, name:"Jomara Seafood", location:"Miami, FL", website:"jomaraseafood.com", tier:1, tierLabel:"T1 \u2014 Immediate", overview:"One of the largest importers and full-line distributors of frozen seafood in the US. Founded 1987. HACCP and EU compliant. Large supply network. Distribution center in Miami.", capacityGap:"Full-line distributor needing consistent containerized supply across multiple species. Miami is gateway port.", recentTrigger:"Tariff-driven supply chain disruption. As a large full-line distributor, any shrimp supply gap creates immediate procurement pressure.", offeringFit:"BWG\u2019s HACCP certification, USFDA compliance, multi-species catalogue, and 40\u2019 FCL reefer delivery aligns with Jomara\u2019s import model.", tags:["full-line","HACCP","Miami port","large-scale"] },
-      { id:4, name:"Premium Seafood Company", location:"New Jersey", website:"premiumseafood.com", tier:1, tierLabel:"T1 \u2014 Immediate", overview:"Wholesale company dedicated to sourcing best quality shrimp and frozen seafood at competitive prices. Serves wholesalers, foodservice, supermarkets, national restaurant chains.", capacityGap:"Concentrates on consistently available product lines from reputable packers. Small operation focused on shrimp.", recentTrigger:"India tariff directly hits their shrimp-centric business model. Needs new packer relationships for consistent supply.", offeringFit:"BWG\u2019s core strength is shrimp (vannamei HOSO, PDTO, PD, cooked + black tiger) from multiple certified factories. Exact value prop match.", tags:["shrimp-focused","wholesale","NJ"] },
-      { id:5, name:"Wild N Farm Seafood Trading", location:"Miami, FL", website:"wildnfarmseafood.com", tier:2, tierLabel:"T2 \u2014 This Month", overview:"Miami-based seafood trading company. 40 years across New Orleans, Florida Keys, Yucatan, Bahamas, Spain, Ecuador. Family of chefs. Experts in grading and packing.", capacityGap:"Small operation leveraging global connections. Long-standing relationships but limited Asia sourcing depth.", recentTrigger:"India tariff shakeup creates opportunity for new Asian sourcing partnerships. Trader-to-trader model aligns.", offeringFit:"BWG\u2019s mixed-container capability, quality grading, and 10+ sourcing countries complements their Americas-focused network.", tags:["trading","Miami","Americas-focused"] },
-      { id:6, name:"American Seafood Imports / Niamar", location:"New Jersey & Connecticut", website:"americanseafoodimports.com", tier:2, tierLabel:"T2 \u2014 This Month", overview:"Decades-old frozen seafood importer serving wholesalers and distributors across the East Coast (NY, NJ, CT, MA, PA, MD, VA, NC, SC, GA, FL, Chicago).", capacityGap:"East Coast coverage is wide but sourcing concentrated in Americas + limited Asia. Small team, massive footprint.", recentTrigger:"Already imports from Asia \u2014 India tariff disrupts that leg. East Coast distribution with port access at NY/NJ and Miami.", offeringFit:"BWG supplies shrimp, lobster tails, fish products they already distribute. Adding Vietnam/Thailand/Indonesia source diversifies Asia book.", tags:["East Coast","multi-state","lobster tails"] },
-      { id:7, name:"Seafood Wholesalers", location:"Houston, TX", website:"seafoodwholesalers.com", tier:2, tierLabel:"T2 \u2014 This Month", overview:"Vertically integrated wholesale seafood company. Production, inventory management and logistics with global partnerships. 100+ years combined team experience. Serves Texas.", capacityGap:"Regional Texas distributor with global sourcing ambition but limited international reach. Houston port is major US entry point.", recentTrigger:"Growing business in seafood-hungry Gulf Coast market. Houston port proximity makes containerized imports cost-efficient.", offeringFit:"BWG\u2019s reefer container delivery to Houston port, mixed SKU containers, and multi-species catalogue fits their expansion needs.", tags:["Houston port","regional","vertically integrated"] },
-      { id:8, name:"Walprice Seafood Wholesale", location:"Houston, TX", website:"walprice.com", tier:2, tierLabel:"T2 \u2014 This Month", overview:"Houston seafood distributor operating since 2008. Fresh and frozen seafood for Houston and surrounding area. Wholesale focus.", capacityGap:"Small-mid distributor. Limited international sourcing capability. Relies on buying from larger importers.", recentTrigger:"Rising wholesale shrimp prices (21% increase) squeeze margins. Direct import relationship could improve position.", offeringFit:"BWG can help bypass intermediaries with direct container imports at Houston port. Shrimp, tilapia, basa, squid.", tags:["Houston","restaurant-supply","direct-import"] },
-      { id:9, name:"Sea Win", location:"Downtown Los Angeles, CA", website:"seawin.com", tier:3, tierLabel:"T3 \u2014 Strategic", overview:"Full-service fresh, frozen and live seafood distributor. Est. 1983. One-stop shop for distributors, markets, restaurants. Chinese, Vietnamese, Spanish speaking staff.", capacityGap:"LA-based with Asian community connections. Serves ethnic markets needing consistent frozen supply.", recentTrigger:"LA is second-largest US port for seafood imports. Ethnic retail and restaurant demand for Asian-sourced frozen seafood is strong.", offeringFit:"BWG\u2019s catalogue includes ethnic market items: pomfret, milk fish, seer fish, tilapia, squid, black tiger, cuttlefish.", tags:["ethnic-market","LA port","multilingual"] },
-      { id:10, name:"P&D Seafood Company", location:"Los Angeles, CA", website:"pdseafood.com", tier:3, tierLabel:"T3 \u2014 Strategic", overview:"One of the largest seafood importers and distributors in Los Angeles. Operating since 1985. Fresh and frozen products for restaurants.", capacityGap:"Large LA operation concentrated in restaurant/foodservice. Needs reliable containerized frozen supply.", recentTrigger:"India tariff impact on shrimp pricing. LA market competition requires competitive sourcing.", offeringFit:"BWG\u2019s shrimp range (especially P&D forms) and fish fillets (salmon, basa, tilapia) fit restaurant supply needs.", tags:["LA","restaurant-focused","large-importer"] },
-      { id:11, name:"Crocker & Winsor Seafoods", location:"Boston, MA", website:"crockerwinsor.com", tier:3, tierLabel:"T3 \u2014 Strategic", overview:"Wholesale distributor of frozen fish and seafood. 115+ years in business. Over 600 different seafood items. Global sourcing contacts.", capacityGap:"Massive catalogue (600+ items) requires deep supplier network. Boston is a major US seafood hub.", recentTrigger:"600+ SKUs means constant supplier search. Tariff disruption creates entry points in shrimp and Asian seafood.", offeringFit:"BWG\u2019s breadth (shrimp, lobster, crab, fish, squid, cuttlefish, octopus, scallops, mussels) fills multiple SKU gaps.", tags:["Boston","600+ SKUs","legacy"] },
-      { id:12, name:"Ocean Seafood Depot", location:"Newark, NJ", website:"oceanseafood.com", tier:4, tierLabel:"T4 \u2014 Pipeline", overview:"One of the longest-established seafood distributors in NJ. 30 trucks, six-day delivery to NY, NJ, PA. Imports from Portugal, Spain, Morocco. Since 1998.", capacityGap:"Strong local distribution but import sourcing is Europe/Morocco focused. Limited Asia sourcing.", recentTrigger:"Expanding frozen wholesale department. Restaurant + supermarket + hotel clients need consistent frozen supply.", offeringFit:"BWG adds Asian-sourced frozen products (shrimp, squid, tilapia, basa) to complement European import book.", tags:["NJ","30-truck fleet","Europe-focused"] },
-      { id:13, name:"Manny\u2019s Seafood", location:"Miami, FL (South Florida)", website:"mannysseafood.com", tier:4, tierLabel:"T4 \u2014 Pipeline", overview:"Family-owned frozen seafood distributor. 40+ years serving South Florida restaurants. Covers Miami-Dade, Monroe, Broward, Palm Beach counties.", capacityGap:"Regional distributor, family-owned. Sources globally but relies on few large importers.", recentTrigger:"Competitive pricing pressure from tariff-driven wholesale price increases. Restaurant clients pushing back.", offeringFit:"BWG offers direct supply of shrimp, lobster tails, fish fillets at competitive pricing, bypassing intermediary markup.", tags:["South Florida","family-owned","40+ years"] },
-      { id:14, name:"Prime Seafood Imports", location:"Nationwide (cold storage)", website:"primesfd.com", tier:4, tierLabel:"T4 \u2014 Pipeline", overview:"Major importer of premium farm-raised white shrimp (vannamei). Sources exclusively from South/Central America. 30+ years experience.", capacityGap:"Concentrated in Americas sourcing. No Asia-origin supply. Single-hemisphere risk.", recentTrigger:"Single-origin risk from Americas. Any supply disruption leaves them exposed without Asia backup.", offeringFit:"BWG supplies exact same product \u2014 farm-raised vannamei in all forms from Asia. Geographic diversification play.", tags:["vannamei-specialist","nationwide","Americas-only"] },
-      { id:15, name:"Houston Seafood Company", location:"Houston, TX", website:"houstonseafood.com", tier:4, tierLabel:"T4 \u2014 Pipeline", overview:"Global supply chain management company focused on seafood. Values sustainability, traceability, social responsibility.", capacityGap:"Supply chain management company \u2014 needs reliable upstream suppliers to fulfill customer commitments.", recentTrigger:"Nationwide frozen seafood sourcing demand. Houston port is cost-efficient for BWG\u2019s reefer containers.", offeringFit:"BWG\u2019s traceability (factory-level BRC, USFDA, ISO, SQF), HACCP certification aligns with values-driven positioning.", tags:["supply-chain","Houston port","values-driven"] },
-    ];
-    function LoginScreen({ onLogin }) {
-      const [email, setEmail] = useState('');
-      const [error, setError] = useState('');
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        const domain = email.substring(email.indexOf('@'));
-        if (config.allowedDomains.includes(domain.toLowerCase())) {
-          localStorage.setItem('srbi-bw-auth', email);
-          onLogin(email);
-        } else {
-          setError('Access restricted. Please use an authorized email domain.');
-        }
-      };
-      return (
-        React.createElement('div', {className:'login-container'},
-          React.createElement('div', {className:'login-box fade-up'},
-            React.createElement('div', {className:'login-logo'},
-              React.createElement('div', {className:'logo-mark'},
-                React.createElement('div', {className:'wave-icon'}, '\ud83c\udf0a'),
-                React.createElement('h1', null, 'SRBI')
-              ),
-              React.createElement('div', {className:'subtitle'}, 'Secondary Research-Based Intelligence')
-            ),
-            React.createElement('div', {className:'login-divider'}),
-            React.createElement('div', {style:{textAlign:'center',marginBottom:24}},
-              React.createElement('div', {style:{fontSize:14,color:'var(--text-secondary)',fontWeight:500}}, config.clientName),
-              React.createElement('div', {style:{fontSize:12,color:'var(--text-muted)',marginTop:4}}, 'US Market Expansion \u2014 Buyer Intelligence Dossier')
-            ),
-            React.createElement('form', {onSubmit:handleSubmit},
-              React.createElement('label', {className:'login-label'}, 'Work Email'),
-              React.createElement('input', {className:'login-input', type:'email', placeholder:'you@company.com', value:email, onChange:(e)=>{setEmail(e.target.value);setError('');}, required:true, autoFocus:true}),
-              React.createElement('button', {className:'login-btn', type:'submit'}, 'Access Dossier'),
-              error && React.createElement('div', {className:'login-error'}, error)
-            ),
-            React.createElement('div', {className:'login-footer'}, 'Built by ' + config.builtBy + ' \u00b7 Report Date: ' + config.reportDate)
-          )
-        )
-      );
-    }
-    function CompanyCard({ company, index }) {
-      const tierClass = 't' + company.tier;
-      return React.createElement('div', {className:'company-card fade-up', style:{animationDelay:index*0.06+'s'}},
-        React.createElement('div', {className:'card-header'},
-          React.createElement('div', {className:'card-title-area'},
-            React.createElement('h3', null, company.name),
-            React.createElement('div', {className:'card-location'}, company.location)
-          ),
-          React.createElement('div', {className:'tier-badge '+tierClass}, company.tierLabel)
-        ),
-        React.createElement('div', {className:'card-body'},
-          React.createElement('div', {className:'card-overview'}, company.overview),
-          React.createElement('div', {className:'card-signals'},
-            React.createElement('div', {className:'signal-row'},
-              React.createElement('div', {className:'signal-label'}, 'CAPACITY GAP'),
-              React.createElement('div', {className:'signal-value'}, company.capacityGap)
-            ),
-            React.createElement('div', {className:'signal-row'},
-              React.createElement('div', {className:'signal-label'}, 'WHY NOW'),
-              React.createElement('div', {className:'signal-value'}, company.recentTrigger)
-            ),
-            React.createElement('div', {className:'signal-row'},
-              React.createElement('div', {className:'signal-label'}, 'OFFERING FIT'),
-              React.createElement('div', {className:'signal-value'}, company.offeringFit)
-            )
-          )
-        ),
-        React.createElement('div', {className:'card-divider', style:{margin:'0 24px'}}),
-        React.createElement('div', {className:'card-footer'},
-          React.createElement('a', {className:'card-website', href:'https://'+company.website, target:'_blank', rel:'noopener noreferrer'}, '\u2197 '+company.website),
-          React.createElement('div', {className:'card-tags'}, company.tags.map((tag,i) => React.createElement('span', {className:'card-tag', key:i}, tag)))
-        )
-      );
-    }
-    function Dossier({ onLogout }) {
-      const [filter, setFilter] = useState('all');
-      const filtered = filter === 'all' ? companies : companies.filter(c => c.tier === parseInt(filter));
-      const tierCounts = [1,2,3,4].map(t => companies.filter(c => c.tier === t).length);
-      const tierInfo = [{tier:'1',label:'Immediate',color:'var(--tier1)'},{tier:'2',label:'This Month',color:'var(--tier2)'},{tier:'3',label:'Strategic',color:'var(--tier3)'},{tier:'4',label:'Pipeline',color:'var(--tier4)'}];
-      return React.createElement('div', {className:'dossier-container'},
-        React.createElement('div', {className:'dossier-header'},
-          React.createElement('div', {className:'header-inner'},
-            React.createElement('div', {className:'header-left'},
-              React.createElement('div', {className:'header-logo'}, '\ud83c\udf0a'),
-              React.createElement('div', {className:'header-title'}, 'SRBI ', React.createElement('span', null, '\u2014 ' + config.clientShort))
-            ),
-            React.createElement('div', {className:'header-right'},
-              React.createElement('div', {className:'header-meta'}, React.createElement('strong', null, config.market), ' \u00b7 ' + config.reportDate),
-              React.createElement('button', {className:'logout-btn', onClick:onLogout}, 'Sign Out')
-            )
-          )
-        ),
-        React.createElement('div', {className:'hero fade-up'},
-          React.createElement('h2', null, React.createElement('span', {className:'gradient-text'}, 'US Market'), ' Buyer Intelligence'),
-          React.createElement('p', {className:'hero-sub'}, companies.length + ' companies identified with buying alignment for ' + config.clientShort + '\'s frozen seafood catalogue across major US importing hubs. Tiered by intent strength and timing.')
-        ),
-        React.createElement('div', {className:'stats-bar'},
-          React.createElement('div', {className:'stat-pill'}, '\ud83d\udcca ', React.createElement('span', null, 'Scanned ', React.createElement('strong', null, config.companiesScanned), ' companies')),
-          React.createElement('div', {className:'stat-pill'}, '\ud83c\udfaf ', React.createElement('span', null, 'Shortlisted ', React.createElement('strong', null, companies.length))),
-          React.createElement('div', {className:'stat-pill'}, '\ud83d\udccd ', React.createElement('span', null, 'Hubs: ', React.createElement('strong', null, 'NY/NJ \u00b7 Miami \u00b7 Houston \u00b7 LA \u00b7 Boston'))),
-          React.createElement('div', {className:'stat-pill'}, '\ud83d\udce6 ', React.createElement('span', null, 'Delivery: ', React.createElement('strong', null, "40' FCL Reefer")))
-        ),
-        React.createElement('div', {className:'market-alert'},
-          React.createElement('div', {className:'alert-box'},
-            React.createElement('div', {className:'alert-icon'}, '\u26a1'),
-            React.createElement('div', {className:'alert-content'},
-              React.createElement('h4', null, 'Market Trigger \u2014 US Tariff on Indian Shrimp (~58%)'),
-              React.createElement('p', null, 'India was the #1 shrimp supplier to the US. The 2025 tariff has driven wholesale prices up ~21% and US importers are actively seeking alternative suppliers from Vietnam, Indonesia, Ecuador, and Thailand. BWG\'s multi-origin sourcing capability creates a once-in-a-cycle entry window into the US market.')
-            )
-          )
-        ),
-        React.createElement('div', {className:'filters'},
-          React.createElement('button', {className:'filter-btn '+(filter==='all'?'active':''), onClick:()=>setFilter('all')}, 'All Companies', React.createElement('span', {className:'filter-count'}, companies.length)),
-          tierInfo.map(({tier,label,color}) => React.createElement('button', {key:tier, className:'filter-btn '+(filter===tier?'active':''), onClick:()=>setFilter(tier), style:filter===tier?{borderColor:color,color}:{}}, 'T'+tier+' \u2014 '+label, React.createElement('span', {className:'filter-count'}, tierCounts[tier-1])))
-        ),
-        React.createElement('div', {className:'companies-grid'}, filtered.map((company, idx) => React.createElement(CompanyCard, {key:company.id, company, index:idx})))
-      );
-    }
-    function App() {
-      const [user, setUser] = useState(null);
-      useEffect(() => {
-        const saved = localStorage.getItem('srbi-bw-auth');
-        if (saved) {
-          const domain = saved.substring(saved.indexOf('@'));
-          if (config.allowedDomains.includes(domain.toLowerCase())) setUser(saved);
-        }
-      }, []);
-      const handleLogout = () => { localStorage.removeItem('srbi-bw-auth'); setUser(null); };
-      if (!user) return React.createElement(LoginScreen, {onLogin:setUser});
-      return React.createElement(Dossier, {onLogout:handleLogout});
-    }
-    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
-  </script>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-mark">
+        <div class="wave-icon">🌊</div>
+        <h1 class="logo-h1">SRBI</h1>
+      </div>
+      <div class="login-subtitle" style="margin-bottom:0">Secondary Research-Based Intelligence</div>
+    </div>
+    <div class="login-divider"></div>
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:14px;color:rgba(255,255,255,.7);font-weight:500">Blue Waters General Trading L.L.C</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:4px">US Market Expansion — Buyer Intelligence Dossier</div>
+    </div>
+    <label class="login-label">Work Email</label>
+    <input class="login-input" type="email" id="email-input" placeholder="you@company.com" autocomplete="email"/>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Access Dossier</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-footer">Built by Axlrate · Report Date: March 18, 2026</div>
+  </div>
+</div>
+
+<!-- ═══ DOSSIER APP ═══ -->
+<div id="app-screen">
+  <div class="app-header">
+    <div class="app-header-inner">
+      <div class="app-header-left">
+        <h2>SRBI Intelligence Dossier</h2>
+        <h1>15 Companies with Buying Alignment</h1>
+        <p>For Blue Waters General Trading · March 18, 2026 · ~150+ companies scanned</p>
+      </div>
+      <div class="app-header-right">
+        <span id="user-display"></span>
+        <button class="signout-btn" onclick="doSignout()">Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="methodology"><div class="methodology-box">
+    <strong>SRBI Methodology:</strong> Analyzes publicly available information against 4 intent conditions — <strong>Unresolved Pain</strong>, <strong>Capacity Gap</strong>, <strong>Recent Trigger</strong>, <strong>Offering Fit</strong>. One signal is noise. Two is a pattern. Three from independent sources is intent. Framework defaults to NO EVIDENCE until proven otherwise.
+  </div></div>
+
+  <div class="market-alert"><div class="market-alert-box">
+    <div class="alert-icon">⚡</div>
+    <div>
+      <h4>Market Trigger — US Tariff on Indian Shrimp (~58%)</h4>
+      <p>India was the #1 shrimp supplier to the US. The 2025 tariff has driven wholesale prices up ~21% and US importers are actively seeking alternative suppliers. BWG's multi-origin sourcing (Vietnam, Indonesia, Thailand, China) creates a once-in-a-cycle entry window into the US market. Small–mid importers are most disrupted.</p>
+    </div>
+  </div></div>
+
+  <div class="filters" id="filters"></div>
+  <div class="cards" id="cards-container"></div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const TIER = {
+  1:{bg:"#dc2626",text:"#fff",light:"#fef2f2",border:"#fecaca"},
+  2:{bg:"#d97706",text:"#fff",light:"#fffbeb",border:"#fde68a"},
+  3:{bg:"#2563eb",text:"#fff",light:"#eff6ff",border:"#bfdbfe"},
+  4:{bg:"#6b7280",text:"#fff",light:"#f9fafb",border:"#e5e7eb"}
+};
+
+const SIGNAL_MAP = {
+  'tariff-hit':['tag-red','⚠ Tariff hit'],'supply-gap':['tag-red','Supply gap'],'urgent':['tag-red','⚠ Urgent'],
+  'diversification':['tag-amber','Diversification need'],'price-pressure':['tag-amber','Price pressure'],
+  'multi-origin':['tag-green','Multi-origin fit'],'product-overlap':['tag-green','Product overlap'],
+  'direct-import':['tag-blue','Direct import'],'ethnic-market':['tag-blue','Ethnic market'],
+  'port-proximity':['tag-gray','Port proximity'],'pipeline':['tag-gray','Pipeline'],
+  'compliance-match':['tag-green','Compliance match'],'single-origin-risk':['tag-amber','Single-origin risk'],
+  'full-line':['tag-blue','Full-line distributor'],'shrimp-focused':['tag-blue','Shrimp-focused'],
+  'trader-fit':['tag-green','Trader-to-trader fit'],'regional':['tag-gray','Regional distributor']
+};
+
+const COMPANIES = [
+  {name:"Baywatch Seafood Inc.",website:"baywatchseafood.com",tier:1,
+    overview:["Perth Amboy, NJ · Frozen Seafood Importer","Est. 2009 · Small team · Serves North American market","Direct importer from India, Sri Lanka, Thailand, Indonesia, Taiwan","2,400+ bills of lading on record (2013–2025)","Est. revenue $50M–$100M annually"],
+    funding:["Revenue-funded — no disclosed institutional rounds","Active import volume: ~45 shipments in last 90 days","Substantial lines of credit with suppliers and banks"],
+    fundingEv:[{q:"We are now focusing on growing the business in North America",s:"Baywatch Seafood Website",u:"http://www.baywatchseafood.com/"}],
+    expansion:["Specializes in shrimp, squid, and octopus from Asia","Exclusive relationships with reputed producers across 5+ Asian countries","Supplies from pallets to full container loads","QC team monitors production at source factories"],
+    expansionEv:[{q:"Direct importers with exclusive relationships with reputed producers in India, Sri Lanka, Thailand, Indonesia, Taiwan and many more",s:"Baywatch Seafood",u:"http://www.baywatchseafood.com/"}],
+    gap:["Small company heavily dependent on Asian sourcing — most disrupted profile by India tariffs","Limited supplier diversification across origins","Concentrated in Indian supply chain which now faces 58% tariff","Needs alternative sourcing without rebuilding entire procurement process"],
+    why:"58% US tariff on Indian shrimp directly impacts their primary sourcing region. Must diversify or absorb cost. Active import volume shows continued buying — they need alternatives NOW, not next quarter.",
+    fit:"Vannamei shrimp (HOSO, PDTO, PD) · Black tiger shrimp · Squid (whole, tubes, rings) · Octopus · Multi-origin sourcing from Vietnam, Indonesia, Thailand bypasses India tariff · Container-scale with mixed SKUs per container",
+    summary:"Baywatch is a small, Asia-dependent frozen seafood importer in NJ with 2,400+ shipments on record — exactly the profile most disrupted by the 58% India tariff. They import shrimp, squid, and octopus, all of which BWG supplies from multiple certified origins. The product overlap is near-total and the timing is urgent.",
+    supply:{signals:["tariff-hit","supply-gap","product-overlap","urgent"],
+      currentSourcing:"India, Sri Lanka, Thailand, Indonesia, Taiwan",
+      bwgAdvantage:"Vietnam + Indonesia + Thailand origins bypass India tariff; mixed-container capability reduces MOQ friction",
+      complianceMatch:"Both HACCP-compliant; BWG sources from USFDA/BRC/SQF certified factories",
+      riskNotes:["Heavy India dependence = immediate tariff exposure","Small team = limited bandwidth to vet new suppliers independently"]},
+    sources:[{l:"Baywatch Seafood Website",t:"p",u:"http://www.baywatchseafood.com/",n:"Sourcing countries, product range, business model"},{l:"ZoomInfo Profile",t:"s",u:"https://www.zoominfo.com/c/baywatch-seafood/359270543",n:"HQ location, est. 2009, Perth Amboy NJ"},{l:"ImportInfo Trade Data",t:"p",u:"https://www.importinfo.com/baywatch-seafood",n:"2,426 bills of lading, shipment frequency"},{l:"Bloomberg Company Profile",t:"s",u:"https://www.bloomberg.com/profile/company/1286199D:US",n:"Founded 2013 (trading corp entity), wholesale fish & seafood"}]
+  },
+  {name:"Ocean Frost Corp.",website:"oceanfrost.com",tier:1,
+    overview:["Newark, NJ · Buyer, Trader, Importer, Seller of Frozen Seafood","Established company with substantial credit lines","Wide selection: shrimp, lobster, crab, scallops, squid, octopus, mussels, clams, finned fish","Exclusive 'Algarvio' octopus label imported from Spain"],
+    funding:["Revenue-funded with strong financial position","Substantial lines of credit from suppliers and banking community","Continuous expansion into new products and markets"],
+    fundingEv:[{q:"We can say without a doubt that Ocean Frost has solidified its place as a buyer, trader, importer, and seller of frozen seafood",s:"Ocean Frost Corp Website",u:"https://www.oceanfrost.com/"}],
+    expansion:["Constantly looking for new products and new markets worldwide","Unique position to introduce new high-end items to customers first","All products properly labeled and in compliance with safety guidelines","Diversified list of well-known items and brands plus exclusive labels"],
+    expansionEv:[{q:"Ocean Frost continues to grow and continues to look for new products and new markets from around the world",s:"Ocean Frost Corp",u:"https://www.oceanfrost.com/"}],
+    gap:["India tariff forces recalibration of shrimp sourcing — their highest volume category","Multiple product lines overlap with BWG catalogue simultaneously","Mid-size operation needing competitive multi-origin pricing to maintain margins","Port Newark location = direct reefer container access"],
+    why:"Product breadth overlap is massive — shrimp, squid, octopus, mussels, scallops all in BWG's catalogue. India tariff disrupts their shrimp sourcing, and they're actively seeking new products and markets. The pitch is multi-product, not single-SKU.",
+    fit:"Vannamei & black tiger shrimp · Squid (whole, cleaned, tubes, rings) · Baby octopus · Half shell mussels · Scallops · Cuttlefish · Multi-origin pricing advantage · Mixed containers with multiple species",
+    summary:"Ocean Frost is a well-established NJ importer-distributor with a massive frozen seafood catalogue that overlaps almost entirely with BWG's product range. They're actively seeking new products and suppliers, have strong credit lines, and sit right at Port Newark. The India tariff creates a specific entry point via shrimp, but the relationship expands to squid, octopus, mussels, and scallops.",
+    supply:{signals:["product-overlap","multi-origin","full-line","diversification"],
+      currentSourcing:"Spain (octopus), various global suppliers for full-line catalogue",
+      bwgAdvantage:"BWG covers 80%+ of their frozen catalogue from certified Asian factories; mixed-container capability lets them test multiple products in one shipment",
+      complianceMatch:"Both emphasize compliance and proper labeling; BWG's factory certifications (BRC, USFDA, ISO, SQF) meet their standards",
+      riskNotes:["Established supplier relationships may require competitive pricing to switch","Full-line means multiple decision-makers for different product categories"]},
+    sources:[{l:"Ocean Frost Corp Website",t:"p",u:"https://www.oceanfrost.com/",n:"Product range, financial position, growth strategy"},{l:"NJ Seafood Importers Directory",t:"s",u:"https://www.nj.gov/agriculture/seafood/impexp.pdf",n:"Listed as NJ-based importer/exporter"},{l:"Industry inference",t:"i",u:"#",n:"Port Newark proximity = direct container access for reefer shipments"}]
+  },
+  {name:"Jomara Seafood",website:"jomaraseafood.com",tier:1,
+    overview:["Miami, FL · One of largest US importers/distributors of frozen seafood","Founded 1987 by Raul and Mario 'Bob' Interian","HACCP and EU compliant food safety standards","Distribution center in Miami — gateway to the Americas"],
+    funding:["Revenue-funded — established 1987 (37+ years in business)","Large supply network with HACCP/EU-compliant suppliers","Also operates Jomara Market retail division"],
+    fundingEv:[{q:"Jomara Seafood is among the largest importers and full-line distributors of quality frozen seafood in the United States",s:"Jomara Seafood Website",u:"https://jomaraseafood.com/"}],
+    expansion:["Full-line frozen distributor: whole fish, fillets, lobsters, shrimp, prawns, crabs, chunk fish","Only works with HACCP-certified international suppliers and producers","Ships under strictest industry guidelines and regulations","Miami distribution center serves wholesale, foodservice, and retail"],
+    expansionEv:[{q:"We attain our goals by consistently having a large supply network, as well as HACCP and EU compliant food safety standards",s:"Jomara Seafood",u:"https://jomaraseafood.com/"}],
+    gap:["Full-line distributor needing consistent containerized supply across multiple species","Tariff-driven shrimp supply disruption hits their highest-volume category","Miami port is primary entry point for Latin American and Asian frozen imports","HACCP-mandatory sourcing means limited qualified supplier pool"],
+    why:"Jomara is one of the largest frozen seafood importers in the US, HACCP/EU-compliant, and sits at Miami — the gateway port. Any disruption in shrimp supply (their biggest category) creates immediate procurement pressure. BWG's HACCP certification and USFDA-compliant factories are pre-qualified.",
+    fit:"Full frozen seafood catalogue: shrimp (all forms) · lobster · crab · fish fillets · squid · 40' FCL reefer to Miami port · HACCP-to-HACCP compliance alignment · Flexible payment terms",
+    summary:"One of the largest frozen seafood operations in the US, founded in 1987, sitting at Miami port with HACCP/EU compliance requirements. BWG is one of very few potential new suppliers who can meet their compliance bar while offering multi-species containers at competitive pricing. The India tariff creates the opening; the compliance match closes the deal.",
+    supply:{signals:["compliance-match","full-line","tariff-hit","product-overlap"],
+      currentSourcing:"Large global supply network — HACCP/EU-compliant producers only",
+      bwgAdvantage:"BWG's HACCP certification + USFDA/BRC/SQF factory compliance is a pre-qualification; multi-species containers reduce logistics cost",
+      complianceMatch:"Both HACCP-certified; BWG sources from EU and USFDA-approved factories — direct compliance alignment",
+      riskNotes:["Large operation = longer procurement process with multiple stakeholders","37+ years means deep existing supplier relationships to displace"]},
+    sources:[{l:"Jomara Seafood Website",t:"p",u:"https://jomaraseafood.com/",n:"Company overview, product range, compliance standards"},{l:"Jomara Wholesale Page",t:"p",u:"https://jomaraseafood.com/wholesale/",n:"Full product catalogue and supplier requirements"},{l:"Industry inference",t:"i",u:"#",n:"Miami port = #1 US entry point for Latin American and Asian frozen seafood"}]
+  },
+  {name:"Premium Seafood Company",website:"premiumseafood.com",tier:1,
+    overview:["New Jersey · Wholesale shrimp & frozen seafood","Michael and Patti Sirkus — family-owned","Serves wholesalers, foodservice, supermarkets, national restaurant chains, fish markets","Does NOT sell retail or to individual restaurants"],
+    funding:["Revenue-funded — established wholesale operation","Known as 'the most respected name in the seafood industry'","Concentrates on consistently available product lines"],
+    fundingEv:[{q:"Michael and Patti have succeeded in making Premium Seafood the most respected name in the seafood industry",s:"Premium Seafood Website",u:"http://www.premiumseafood.com/"}],
+    expansion:["Dedicated to sourcing best quality shrimp and frozen seafood at competitive prices","Works only with reputable and reliable packers and producers","Focuses on product lines which are consistently available","Target: wholesalers, food service, supermarkets, national chains, distributors"],
+    expansionEv:[{q:"We concentrate on product lines which are consistently available from the most reputable and reliable packers and producers",s:"Premium Seafood",u:"http://www.premiumseafood.com/"}],
+    gap:["Shrimp-centric business model directly hit by India tariff","Small operation focused on consistency — limited sourcing diversification","Needs new 'reputable packer' relationships for competitive shrimp supply","Their value prop to customers is 'quality + price' — both under pressure from tariffs"],
+    why:"Premium Seafood's entire model is 'best quality shrimp at competitive prices from reputable packers.' The India tariff breaks this formula. BWG is a reputable packer with competitive pricing from non-India origins. The fit is almost definitional.",
+    fit:"Vannamei shrimp HOSO, PDTO, PD, cooked · Black tiger shrimp · All size grades · Container-scale from certified Vietnam/Indonesia/Thailand factories · Consistent availability year-round",
+    summary:"A family-owned NJ wholesaler whose entire identity is 'best shrimp, best price, most reputable packers.' The India tariff directly attacks all three pillars. BWG from Vietnam/Indonesia/Thailand origins restores the formula — same quality shrimp, competitive (non-tariffed) pricing, from BRC/USFDA/SQF certified factories.",
+    supply:{signals:["tariff-hit","shrimp-focused","price-pressure","compliance-match"],
+      currentSourcing:"Reputable packers/producers — likely India-heavy for shrimp",
+      bwgAdvantage:"BWG is exactly a 'reputable packer' from non-India origins; year-round availability from multiple factories",
+      complianceMatch:"BWG's factory certifications (BRC, USFDA, SQF) match their 'reputable packer' requirement",
+      riskNotes:["Small family operation = owner-driven decisions, potentially faster","Shrimp-only focus means single product category entry point"]},
+    sources:[{l:"Premium Seafood Website",t:"p",u:"http://www.premiumseafood.com/",n:"Business model, customer types, sourcing philosophy"},{l:"NJ Seafood Suppliers Directory",t:"s",u:"https://www.nj.gov/agriculture/seafood/suppliers.pdf",n:"Listed as NJ-based seafood supplier"},{l:"Industry inference",t:"i",u:"#",n:"Shrimp-centric model = maximum India tariff exposure"}]
+  },
+  {name:"Wild N Farm Seafood Trading",website:"wildnfarmseafood.com",tier:2,
+    overview:["Miami, FL · Seafood Trading Company","40 years in fish business across multiple countries","New Orleans, FL Keys, Yucatan, Bahamas, Spain, Ecuador, Nicaragua, Brazil, Panama","Family of chefs — experts in grading and packing quality seafood"],
+    funding:["Revenue-funded — 40 years of operations","Long-standing relationships with global suppliers","Knowledge of customs agents, freight forwarders, cold storages"],
+    fundingEv:[{q:"We have been in the fish business for 40 years making stops in New Orleans, Apalachicola, Miami, the Florida Keys, the Yucatan Peninsula, Bahamas, Spain, Ecuador, Nicaragua, Brazil and Panama",s:"Wild N Farm Seafood",u:"https://wildnfarmseafood.com/"}],
+    expansion:["Leveraging global connections for imports in Miami","Experts in grading and packing highest quality seafood","Long-standing relationships with global suppliers","Knowledge of entire import supply chain: customs, freight, cold storage"],
+    expansionEv:[],
+    gap:["Small operation — limited Asia sourcing depth compared to Americas network","40 years of Americas-focused relationships but thinner in Asia","India tariff disruption opens door for new Asian sourcing partnerships","Trading model means they understand supplier economics"],
+    why:"Trader-to-trader fit. Wild N Farm understands the import game deeply but their network is Americas-heavy. BWG as a Dubai-based trading house with deep Asian sourcing fills a geographic gap. Both are traders who speak the same language.",
+    fit:"Mixed containers with shrimp, lobster tails, squid, fish · Multi-origin sourcing from 10+ countries · Quality grading expertise aligns with their standards · Flexible partial shipments",
+    summary:"A 40-year Miami trading company with deep Americas connections but limited Asia sourcing. BWG fills the geographic gap — same trader mentality, same quality focus, but from the other side of the world. The business model match (trader-to-trader) makes the first conversation natural.",
+    supply:{signals:["trader-fit","diversification","port-proximity"],
+      currentSourcing:"Americas-heavy: Ecuador, Nicaragua, Brazil, Panama, Spain, Bahamas",
+      bwgAdvantage:"Asia sourcing depth (Vietnam, India, China, Indonesia, Thailand) fills their geographic blind spot",
+      complianceMatch:"Both emphasize quality grading; BWG's factory certifications add institutional credibility",
+      riskNotes:["Small family operation — relationship-driven purchasing","May have existing Asia contacts through Miami network"]},
+    sources:[{l:"Wild N Farm Website",t:"p",u:"https://wildnfarmseafood.com/",n:"40-year history, sourcing countries, quality philosophy"},{l:"Industry inference",t:"i",u:"#",n:"Miami-based trader = Americas-focused supply chain"}]
+  },
+  {name:"American Seafood Imports / Niamar",website:"americanseafoodimports.com",tier:2,
+    overview:["New Jersey & Connecticut · Decades-old frozen seafood importer","Together with Niamar International offer finest quality frozen seafood","Serves wholesalers and distributors across Eastern US","Coverage: NY, NJ, CT, MA, PA, MD, VA, NC, SC, GA, FL, Chicago"],
+    funding:["Revenue-funded — decades of operations","Offices in New Jersey and Connecticut","Serves 16+ states on the East Coast"],
+    fundingEv:[],
+    expansion:["Imports shrimp, lobster tails, butterfish from Central/South America and Asia","Serves frozen seafood distributors, wholesalers, and select retailers","East Coast distribution from NY to FL plus Chicago","Products served in America's finest restaurants and select retail stores"],
+    expansionEv:[{q:"For decades as seafood importers, we have delivered outstanding frozen seafood for our wholesale distributor clients",s:"American Seafood Imports",u:"http://www.americanseafoodimports.com/about.html"}],
+    gap:["East Coast coverage is wide but sourcing concentrated in Americas + limited Asia","Small team serving a massive geographic footprint (16+ states)","Already imports from Asia — India tariff disrupts that leg","Port access at NY/NJ and Miami for containerized imports"],
+    why:"Wide East Coast distribution covering 16 states but sourcing is Americas-heavy with some Asia. The India tariff disrupts their Asian supply leg. BWG adds Vietnam/Thailand/Indonesia sourcing to their existing distribution muscle.",
+    fit:"Shrimp (all forms) · Lobster tails · Fish products · Vietnam/Thailand/Indonesia origins to diversify Asia sourcing · Container delivery to NY/NJ ports",
+    summary:"Decades-old importer covering 16 states on the East Coast with frozen shrimp, lobster tails, and fish. Their Asia sourcing is exposed to the India tariff. BWG slots in as the Vietnam/Thailand/Indonesia alternative supplier feeding their existing distribution network.",
+    supply:{signals:["tariff-hit","diversification","port-proximity","regional"],
+      currentSourcing:"Central/South America + Asia (likely India-heavy)",
+      bwgAdvantage:"Non-India Asian origins (Vietnam, Thailand, Indonesia) for shrimp and seafood; delivery to NY/NJ port",
+      complianceMatch:"Both import to US standards; BWG's USFDA-compliant factories align",
+      riskNotes:["Decades-old relationships = loyalty to existing suppliers","Multi-state distribution means high volume potential if engaged"]},
+    sources:[{l:"American Seafood Imports Website",t:"p",u:"http://www.americanseafoodimports.com/about.html",n:"Distribution coverage, product range, sourcing origins"},{l:"NJ Exporters/Importers List",t:"s",u:"https://www.nj.gov/agriculture/seafood/impexp.pdf",n:"Listed alongside Niamar as NJ importer"}]
+  },
+  {name:"Seafood Wholesalers",website:"seafoodwholesalers.com",tier:2,
+    overview:["Houston, TX · Vertically integrated wholesale seafood company","Combines production, inventory management, and logistics","100+ years combined team experience","Serves Texas, limited areas in AR, LA, OK, NM"],
+    funding:["Revenue-funded — established operations","Strategically located in Houston for optimal service","Efficient working partnerships from around the world"],
+    fundingEv:[],
+    expansion:["Combines production, inventory management and logistics with global partnerships","Vision: highest quality products with sustainable practices","Houston location = strategic for Gulf Coast distribution","Serving TX with expansion into surrounding states"],
+    expansionEv:[{q:"We combine production, inventory management and logistics with efficient working partnerships from around the world",s:"Seafood Wholesalers",u:"https://seafoodwholesalers.com/"}],
+    gap:["Regional Texas distributor with global sourcing ambition but limited international reach","Houston port is a major US entry point for reefer containers","Growing business in seafood-hungry Gulf Coast market","Sustainability commitment needs verified, certified suppliers"],
+    why:"Houston port proximity makes containerized imports cost-efficient. A regional distributor with global ambitions but limited international reach — BWG adds the Asian sourcing leg they're missing.",
+    fit:"Multi-species frozen containers to Houston port · Shrimp, tilapia, basa, squid, fish fillets · Mixed SKU containers · Sustainable and certified sourcing",
+    summary:"Vertically integrated Houston wholesaler with global ambitions but limited international sourcing reach. Houston port is one of the most cost-efficient US entry points for reefer containers. BWG fills the international sourcing gap with certified, sustainable supply from 10+ countries.",
+    supply:{signals:["port-proximity","regional","multi-origin","compliance-match"],
+      currentSourcing:"Domestic + limited international partnerships",
+      bwgAdvantage:"Direct container delivery to Houston port; multi-species catalogue fills their international sourcing gap",
+      complianceMatch:"Both value sustainability; BWG's factory certifications support their quality vision",
+      riskNotes:["Regional focus may mean smaller initial order volumes","100+ years experience = sophisticated procurement team"]},
+    sources:[{l:"Seafood Wholesalers Website",t:"p",u:"https://seafoodwholesalers.com/",n:"Business model, location, service area"},{l:"Industry inference",t:"i",u:"#",n:"Houston port = major US reefer container entry point"}]
+  },
+  {name:"Walprice Seafood Wholesale",website:"walprice.com",tier:2,
+    overview:["Houston, TX · Seafood distributor since 2008","Fresh and frozen seafood for Houston and surrounding area","Wholesale focus serving restaurants","Mission: finest quality fresh and frozen seafood"],
+    funding:["Revenue-funded — operating since 2008","Growing customer base in Houston metro area","Wholesale-focused business model"],
+    fundingEv:[],
+    expansion:["Seafood from world oceans, lakes, and aquaculture facilities","Quality and freshness process ensures delivery standards","Growing Houston-area restaurant customer base","Fresh and frozen product range"],
+    expansionEv:[{q:"We are a wholesale seafood supplier shipping high quality, frozen and fresh seafood for Houston, Texas and Surrounding Area",s:"Walprice Seafood",u:"https://www.walprice.com/"}],
+    gap:["Small-mid distributor with limited international sourcing capability","Currently relies on buying from larger importers — margin squeeze from tariff","Rising wholesale shrimp prices (21% increase) directly compress their margins","Restaurant customers will push back on price increases"],
+    why:"The India tariff has increased wholesale shrimp prices ~21%. Distributors like Walprice who buy from intermediaries are doubly squeezed — the importers pass costs through, and restaurants won't accept higher prices. A direct import relationship with BWG cuts out the middleman.",
+    fit:"Direct container imports at Houston port · Shrimp, tilapia fillets, basa fillets, squid · Competitive pricing vs intermediary-supplied product · Consistent quality",
+    summary:"A Houston distributor squeezed between tariff-inflated import prices and restaurant customers who won't pay more. BWG can help them bypass intermediaries with direct container imports at Houston port — shrimp, tilapia, basa, squid at factory-direct pricing.",
+    supply:{signals:["price-pressure","direct-import","port-proximity"],
+      currentSourcing:"Buys from larger importers/intermediaries — not direct import",
+      bwgAdvantage:"Direct container supply bypasses middleman markup; Houston port delivery reduces logistics cost",
+      complianceMatch:"BWG's HACCP and USFDA compliance meets US import requirements",
+      riskNotes:["May not have direct import experience or cold storage infrastructure","Smaller initial volumes — test with partial containers first"]},
+    sources:[{l:"Walprice Seafood Website",t:"p",u:"https://www.walprice.com/",n:"Location, business model, customer base"},{l:"Industry inference",t:"i",u:"#",n:"Small distributor buying from importers = middleman margin structure"}]
+  },
+  {name:"Sea Win",website:"seawin.com",tier:3,
+    overview:["Downtown Los Angeles, CA · Full-service seafood distributor","Est. 1983 · Fresh, frozen, and live seafood","Chinese, Vietnamese, and Spanish speaking sales staff","Wholesales to distributors, markets, and restaurants"],
+    funding:["Revenue-funded — operating since 1983 (40+ years)","Licensed for fresh/live shellfish delivery","Vast supplier network across multiple regions"],
+    fundingEv:[],
+    expansion:["Full-service: fresh, frozen, and live seafood","Licensed for shellfish including lobsters, crabs, mussels, oysters, clams","Multilingual sales staff serving diverse LA market","Wholesales to distributors, markets, and restaurants across Southern California"],
+    expansionEv:[{q:"Established in 1983, Sea Win is a full-service fresh, frozen and live seafood distributor based in Downtown Los Angeles",s:"Sea Win",u:"https://www.seawin.com/"}],
+    gap:["LA is second-largest US port for seafood imports — massive competition","Serves ethnic markets (Asian, Latin) with specific product demands","Needs consistent frozen supply at competitive pricing for price-sensitive ethnic retail","Vietnamese and Chinese speaking staff = direct Asian market connection"],
+    why:"LA's ethnic seafood market demands specific products: pomfret, milk fish, seer fish, tilapia, black tiger, cuttlefish — all in BWG's catalogue. Sea Win's multilingual team serves this market directly. The fit is product-specific, not just price.",
+    fit:"Ethnic market items: white & black pomfret · milk fish · seer fish · tilapia · black tiger shrimp · cuttlefish · squid · baby octopus · Container delivery to LA port",
+    summary:"40+ year LA distributor serving ethnic markets with multilingual staff. BWG's catalogue includes the specific products ethnic retail demands — pomfret, milk fish, seer fish, tilapia, cuttlefish — items that most Western-focused suppliers don't carry. This is a product-fit story, not just a price story.",
+    supply:{signals:["ethnic-market","product-overlap","port-proximity"],
+      currentSourcing:"Vast network of suppliers — likely includes some Asian direct imports",
+      bwgAdvantage:"Ethnic-specific products (pomfret, milk fish, seer fish) that Western suppliers don't carry; delivery to LA port",
+      complianceMatch:"Both serve US market; BWG's factory certifications meet import requirements",
+      riskNotes:["40+ years = deep existing supplier relationships","May already have competing Asian suppliers for some products"]},
+    sources:[{l:"Sea Win Website",t:"p",u:"https://www.seawin.com/",n:"History, multilingual staff, product range"},{l:"REKKI LA Wholesalers",t:"s",u:"https://rekki.com/food-wholesalers/us/los-angeles/fish-and-seafood",n:"Listed as LA fish & seafood wholesaler"}]
+  },
+  {name:"P&D Seafood Company",website:"pdseafood.com",tier:3,
+    overview:["Los Angeles, CA · One of largest seafood importers/distributors in LA","Operating since 1985 (40 years)","Fresh and frozen products for restaurants","Delivering finest quality seafood products"],
+    funding:["Revenue-funded — 40 years of operations","One of the largest in Los Angeles market","Restaurant-focused distribution model"],
+    fundingEv:[],
+    expansion:["Largest seafood importers and distributors in Los Angeles","Fresh and frozen products for restaurant foodservice","40-year track record in competitive LA market","Delivering finest quality of fresh and frozen seafood products to restaurants"],
+    expansionEv:[{q:"P&D Seafood Company is one of the largest Seafood importers and distributors in Los Angeles and has been operating successfully since 1985",s:"REKKI",u:"https://rekki.com/food-wholesalers/us/los-angeles/fish-and-seafood"}],
+    gap:["India tariff impact on shrimp pricing hits LA restaurant supply chain","LA market competition requires the most competitive sourcing available","Restaurant-focused means price sensitivity is high — thin margins","40 years means established supplier relationships but also price benchmarks to beat"],
+    why:"One of the biggest LA importers, restaurant-focused, where shrimp P&D (peeled & deveined — literally their namesake product) is a core category. India tariff hits this directly. BWG's shrimp range, especially P&D forms, is a direct fit.",
+    fit:"P&D shrimp (their namesake product!) · Vannamei & black tiger all forms · Fish fillets (salmon, basa, tilapia) · Container delivery to LA port · Competitive multi-origin pricing",
+    summary:"Their name is literally P&D — Peeled & Deveined — and they're one of the largest LA importers focused on restaurants. BWG's core shrimp products (P&D, PDTO, PD) are this company's bread and butter. The India tariff creates the entry point; the product naming alignment makes the pitch memorable.",
+    supply:{signals:["tariff-hit","shrimp-focused","price-pressure","port-proximity"],
+      currentSourcing:"Global sourcing for LA restaurant market — likely India-heavy for shrimp",
+      bwgAdvantage:"BWG's P&D shrimp range directly matches their core product; multi-origin pricing advantage",
+      complianceMatch:"Both serve US restaurant market; BWG's certifications meet import standards",
+      riskNotes:["Large established operation = longer decision cycle","LA has many competing importers — price must be sharp"]},
+    sources:[{l:"REKKI LA Directory",t:"p",u:"https://rekki.com/food-wholesalers/us/los-angeles/fish-and-seafood",n:"Listed as one of largest LA importers since 1985"},{l:"Industry inference",t:"i",u:"#",n:"P&D name suggests shrimp P&D is core product category"}]
+  },
+  {name:"Crocker & Winsor Seafoods",website:"crockerwinsor.com",tier:3,
+    overview:["Boston, MA · Wholesale distributor of frozen fish & seafood","115+ years in business","Over 600 different seafood items in catalogue","Global sourcing contacts across multiple continents"],
+    funding:["Revenue-funded — 115+ year legacy business","Vast global contacts built over a century","One of the oldest seafood distributors in the US"],
+    fundingEv:[],
+    expansion:["600+ different seafood items — massive catalogue","Develops products to satisfy changing requirements","Uses vast global contacts to source worldwide","Adapts to ever-changing seafood economy"],
+    expansionEv:[{q:"For more than 115 years, Crocker & Winsor Seafoods has continued to build on our selection of over 600 different seafood items",s:"Crocker & Winsor",u:"https://www.crockerwinsor.com/"}],
+    gap:["600+ items requires deep, constantly refreshed supplier network","Boston is a major US seafood hub — high competition","Tariff disruption creates specific entry points in shrimp and Asian seafood categories","Any supplier who can fill multiple SKU gaps simultaneously has leverage"],
+    why:"600 SKUs means they're always in the market for new suppliers, especially ones who can fill multiple gaps. BWG's breadth across shrimp, lobster, crab, fish, squid, cuttlefish, octopus, scallops, and mussels can fill 10+ SKU gaps from a single supplier.",
+    fit:"Multi-SKU filling: shrimp · lobster · crab · fish fillets · squid · cuttlefish · octopus · scallops · mussels · Mixed containers reduce logistics complexity for 600+ catalogue manager",
+    summary:"A 115-year-old Boston wholesaler managing 600+ SKUs needs suppliers who can fill multiple gaps. BWG's breadth across 10+ species from certified factories — delivered in mixed containers — turns one supplier relationship into 10+ SKU fills. The tariff disruption creates the opening in shrimp; the breadth expands the relationship.",
+    supply:{signals:["product-overlap","multi-origin","diversification","pipeline"],
+      currentSourcing:"Global contacts across multiple continents — 115 years of relationships",
+      bwgAdvantage:"Single supplier for 10+ SKU fills; mixed-container capability reduces their logistics complexity",
+      complianceMatch:"115-year legacy = high compliance standards; BWG's certifications match",
+      riskNotes:["115 years of relationships = very deep existing supplier loyalties","Boston has many competing seafood suppliers — not a supply-scarce market"]},
+    sources:[{l:"Crocker & Winsor Website",t:"p",u:"https://www.crockerwinsor.com/",n:"115-year history, 600+ items, global sourcing"},{l:"Industry inference",t:"i",u:"#",n:"Boston hub = competitive supplier landscape; multi-SKU fill is the differentiator"}]
+  },
+  {name:"Ocean Seafood Depot",website:"oceanseafood.com",tier:4,
+    overview:["Newark, NJ · One of longest-established NJ seafood distributors","30 trucks · Six-day delivery to NY, NJ, PA","Fresh and frozen · Imports from Portugal, Spain, Morocco","Operating since 1998 · Restaurants, supermarkets, hotels"],
+    funding:["Revenue-funded — operating since 1998","30-truck fleet for regional distribution","Recently expanded frozen wholesale department"],
+    fundingEv:[],
+    expansion:["Expanding frozen wholesale department with global sourcing","30-truck fleet delivers six days per week","Imports from Portugal, Spain, Morocco — European focus","Serves restaurants, supermarkets, hotels across tri-state area"],
+    expansionEv:[{q:"From supporting domestic fishermen, to importing the finest seafood around the globe, we are your go to source for daily fresh and frozen seafood deliveries",s:"Ocean Seafood Depot",u:"https://oceanseafood.com/"}],
+    gap:["Strong local distribution but import sourcing is Europe/Morocco focused","Limited Asia sourcing for frozen shrimp, squid, tilapia — growing demand categories","Expanding frozen department needs new product lines to fill trucks","30-truck fleet needs products to fill on delivery routes"],
+    why:"Expanding frozen department + 30-truck fleet + Europe-only imports = opportunity to add Asian-sourced frozen products (shrimp, squid, tilapia, basa) that their restaurant and supermarket clients demand.",
+    fit:"Asian-sourced frozen products: shrimp · squid · tilapia · basa fillets · Complement their European import catalogue · Container delivery to Port Newark",
+    summary:"A well-established NJ distributor with 30 trucks and a growing frozen department, but sourcing is Europe-focused. BWG adds Asian-origin frozen products — shrimp, squid, tilapia, basa — to complement their Portuguese/Spanish/Moroccan catalogue and fill their expanding frozen truck routes.",
+    supply:{signals:["regional","diversification","port-proximity","pipeline"],
+      currentSourcing:"Portugal, Spain, Morocco — European-focused imports",
+      bwgAdvantage:"Asian-origin products complement (not compete with) their European catalogue",
+      complianceMatch:"Both import to US standards; BWG's certifications meet requirements",
+      riskNotes:["European-focused culture may be slower to adopt Asian suppliers","Distribution-first model = volume requirements must be met"]},
+    sources:[{l:"Ocean Seafood Depot Website",t:"p",u:"https://oceanseafood.com/",n:"History, fleet size, European sourcing, product range"},{l:"Ocean Seafood Wholesale Page",t:"p",u:"https://oceanseafood.com/seafood-wholesale-products/",n:"Frozen department expansion details"}]
+  },
+  {name:"Manny's Seafood",website:"mannysseafood.com",tier:4,
+    overview:["Miami, FL · Family-owned frozen seafood distributor","40+ years serving South Florida restaurants","Covers Miami-Dade, Monroe, Broward, Palm Beach + 3 more counties","Sources globally, delivers locally"],
+    funding:["Revenue-funded — 40+ year family business","Reliable delivery across 7 South Florida counties","Global sourcing with local distribution focus"],
+    fundingEv:[],
+    expansion:["Premium shrimp, lobster tails, fish fillets sourced globally","Competitive pricing for South Florida restaurant industry","Reliable delivery: Miami-Dade, Monroe, Broward, Palm Beach, Martin, St. Lucie, Indian River","Focus: quality, service, and price"],
+    expansionEv:[{q:"With a proud legacy of over 4 decades, Manny's Seafood stands as a premier family-owned frozen seafood distribution company",s:"Manny's Seafood",u:"https://mannysseafood.com/"}],
+    gap:["Regional distributor relying on few large importers — limited supplier diversification","Tariff-driven wholesale price increases squeeze their margins","Restaurant clients push back on higher prices — distributor absorbs the pain","Family-owned = agile decision-making but limited procurement bandwidth"],
+    why:"40-year family distributor caught between rising import prices and restaurant clients who won't pay more. BWG can offer direct competitive supply, but Manny's may not have direct import infrastructure — possible trial with BWG delivering to Miami cold storage.",
+    fit:"Direct supply: shrimp · lobster tails · fish fillets · Competitive pricing vs intermediary markup · Delivery to Miami cold storage · Trial-friendly partial containers",
+    summary:"A 40-year South Florida family business squeezed by tariff-driven price increases. Their restaurant clients won't accept higher prices, so Manny's absorbs the margin hit. BWG can offer competitive direct supply, though the relationship may start with BWG supplying through an existing import partner.",
+    supply:{signals:["price-pressure","regional","pipeline"],
+      currentSourcing:"Global sourcing through importers — not direct import",
+      bwgAdvantage:"Competitive pricing through direct supply; partial shipment capability for testing",
+      complianceMatch:"BWG's HACCP and USFDA compliance meets requirements",
+      riskNotes:["May not have import license or cold storage for direct containers","Family operation = single decision-maker but also limited capacity"]},
+    sources:[{l:"Manny's Seafood Website",t:"p",u:"https://mannysseafood.com/",n:"40-year history, South Florida coverage, quality focus"},{l:"Industry inference",t:"i",u:"#",n:"Regional distributor = likely buys through intermediary importers"}]
+  },
+  {name:"Prime Seafood Imports",website:"primesfd.com",tier:4,
+    overview:["Nationwide · Major importer of premium vannamei shrimp","Sources exclusively from South/Central America","30+ years experience · Serves wholesalers, distributors, chains, retailers","Cold storage facilities across the United States"],
+    funding:["Revenue-funded — 30+ year operation","Nationwide cold storage network for distribution","Vertically integrated packer relationships in Americas"],
+    fundingEv:[],
+    expansion:["All forms of farm-raised white shrimp (vannamei): HOSO, HLSO, PD, PDTO, cooked","Vertically integrated packers ensure product integrity and traceability","Nationwide cold storage facilities for convenient pickup","Flexibility to process shrimp in any manner customer desires"],
+    expansionEv:[{q:"Our product line consists of all forms of farm raised, white shrimp. We specialize in raw head-on, headless, peeled and deveined shrimp, as well as cooked",s:"Prime Seafood Imports",u:"http://www.primesfd.com/"}],
+    gap:["Single-hemisphere sourcing: exclusively South/Central America","No Asia-origin supply = concentrated geographic risk","El Niño, seasonal shortages, Ecuador political risk could disrupt supply","Adding Asian vannamei provides hedge without changing product specs"],
+    why:"A vannamei specialist with zero Asian supply. Not urgent today — their Americas sourcing works. But single-hemisphere risk is real (El Niño, Ecuador political risk, seasonal gaps). BWG supplies the exact same product from the other hemisphere. This is a strategic diversification pitch.",
+    fit:"Exact same product: farm-raised vannamei in all forms (HOSO, HLSO, PD, PDTO, cooked) · Asia origins (Vietnam, Indonesia, Thailand) · Geographic diversification play · Same size grades and quality specs",
+    summary:"The pitch is simple: 'You sell the exact same product we supply, from the other side of the world.' Prime Seafood's Americas-only vannamei book has zero Asian backup. BWG doesn't compete with their existing supply — it complements it geographically. The entry point is risk mitigation, not price.",
+    supply:{signals:["single-origin-risk","product-overlap","compliance-match","pipeline"],
+      currentSourcing:"Exclusively South/Central America — vertically integrated packers",
+      bwgAdvantage:"Exact same product (vannamei, all forms) from Asia — geographic diversification, not displacement",
+      complianceMatch:"Both handle same product specs; BWG's factory traceability matches their 'hatchery to plate' standard",
+      riskNotes:["Happy with current sourcing = no urgency to switch","Pitch must be 'hedge' not 'replace' — they're loyal to Americas packers"]},
+    sources:[{l:"Prime Seafood Imports Website",t:"p",u:"http://www.primesfd.com/",n:"Product range, sourcing model, customer types"},{l:"Industry inference",t:"i",u:"#",n:"Americas-only sourcing = geographic concentration risk"}]
+  },
+  {name:"Houston Seafood Company",website:"houstonseafood.com",tier:4,
+    overview:["Houston, TX · Global supply chain management for seafood","Values: sustainability, traceability, social responsibility","Multiple seafood solutions to customers worldwide","Houston port location = strategic for containerized imports"],
+    funding:["Revenue-funded — established operations","Houston-based with national reach","Values-driven positioning in seafood industry"],
+    fundingEv:[],
+    expansion:["Offers several seafood solutions to customers around the world","Looking for reliable, nationwide frozen seafood sourcing","Sustainability, traceability, social responsibility as core values","Houston strategic location for Gulf Coast distribution"],
+    expansionEv:[{q:"We believe in sustainability, traceability, social responsibility, and working with both our customers and vendors to produce results that are beneficial to all parties",s:"Houston Seafood Company",u:"https://www.houstonseafood.com/"}],
+    gap:["Supply chain management company needs reliable upstream suppliers","Values-driven positioning requires verified, certified sourcing partners","Houston port is cost-efficient for BWG's reefer containers","Nationwide ambition needs scalable, compliant supply"],
+    why:"A values-driven seafood supply chain company in Houston. Longer sales cycle, but BWG's factory-level traceability (BRC, USFDA, ISO, SQF) and HACCP certification aligns perfectly with their sustainability and compliance positioning. Strategic, not urgent.",
+    fit:"HACCP-certified supply · Factory-level BRC/USFDA/ISO/SQF traceability · Sustainable and ethical sourcing documentation · Container delivery to Houston port · Multi-species catalogue",
+    summary:"Houston Seafood's values-driven brand needs suppliers who can prove traceability and sustainability. BWG's factory-level certifications (BRC, USFDA, ISO, SQF) and HACCP compliance are rare among frozen seafood traders. The sales cycle is longer, but the compliance-alignment makes BWG a premium partner, not just another supplier.",
+    supply:{signals:["compliance-match","port-proximity","pipeline"],
+      currentSourcing:"Unknown — supply chain management model suggests multiple upstream suppliers",
+      bwgAdvantage:"Factory-level traceability and certification documentation supports their values positioning",
+      complianceMatch:"Strongest compliance alignment in the list — both prioritize sustainability, traceability, responsible sourcing",
+      riskNotes:["Values-driven = high due diligence bar; expect audit requirements","Supply chain management model may mean lower direct volumes"]},
+    sources:[{l:"Houston Seafood Website",t:"p",u:"https://www.houstonseafood.com/",n:"Values, business model, seafood solutions"},{l:"Industry inference",t:"i",u:"#",n:"Houston port location = strategic for reefer container imports"}]
+  }
+];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────────
+let currentTier = 0;
+const openSet = new Set();
+
+// ─── LOGIN ──────────────────────────────────────────────────────────────────────
+document.getElementById('email-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+function doLogin() {
+  const email = document.getElementById('email-input').value.trim();
+  const err = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  err.style.display = 'none';
+  if (!email) { err.textContent = 'Please enter your email'; err.style.display='block'; return; }
+  const domain = email.toLowerCase();
+  if (!domain.endsWith('@axlrate.com') && !domain.endsWith('@bluewatersllcdubai.com')) {
+    err.textContent = 'Access restricted to @axlrate.com and @bluewatersllcdubai.com accounts';
+    err.style.display='block'; return;
+  }
+  btn.disabled = true; btn.textContent = 'Authenticating...';
+  setTimeout(() => {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    document.getElementById('user-display').textContent = email;
+    renderAll();
+  }, 800);
+}
+
+function doSignout() {
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('email-input').value = '';
+  document.getElementById('login-btn').disabled = false;
+  document.getElementById('login-btn').textContent = 'Access Dossier';
+  openSet.clear(); currentTier = 0;
+}
+
+// ─── RENDER ─────────────────────────────────────────────────────────────────────
+function renderAll() {
+  const counts = [0,0,0,0,0];
+  COMPANIES.forEach(c => counts[c.tier]++);
+  const filterBtns = [
+    {v:0,l:`All (${COMPANIES.length})`,bg:'#111'},
+    {v:1,l:`Tier 1 · Immediate (${counts[1]})`,bg:TIER[1].bg},
+    {v:2,l:`Tier 2 · This Month (${counts[2]})`,bg:TIER[2].bg},
+    {v:3,l:`Tier 3 · Strategic (${counts[3]})`,bg:TIER[3].bg},
+    {v:4,l:`Tier 4 · Pipeline (${counts[4]})`,bg:TIER[4].bg}
+  ];
+  document.getElementById('filters').innerHTML = filterBtns.map(b =>
+    `<button class="filter-btn" onclick="setTier(${b.v})" style="${currentTier===b.v?`background:${b.bg};color:#fff;border-color:${b.bg}`:''}">${b.l}</button>`
+  ).join('');
+  const filtered = currentTier===0 ? COMPANIES : COMPANIES.filter(c=>c.tier===currentTier);
+  document.getElementById('cards-container').innerHTML = filtered.map(c => renderCard(c)).join('');
+}
+
+function renderCard(c) {
+  const t = TIER[c.tier];
+  const isOpen = openSet.has(c.name);
+  const key = c.name.replace(/[^a-zA-Z0-9]/g,'_');
+  return `
+  <div class="card${isOpen?' open':''}" id="card-${key}">
+    <div class="card-header" style="background:${isOpen?t.light:'#fff'}" onclick="toggleCard('${c.name.replace(/'/g,"\\'")}')">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+        <span class="tier-badge" style="background:${t.bg};color:${t.text}">T${c.tier}</span>
+        <div style="min-width:0">
+          <div class="card-name">${c.name}</div>
+          <div class="card-site">${c.website} · ${c.overview[0].split('·')[0].trim()}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+        <div>
+          <div class="card-funding">${c.funding[0]}</div>
+          <div class="card-emp">${c.overview[1]}</div>
+        </div>
+        <span class="chevron${isOpen?' open':''}">▾</span>
+      </div>
+    </div>
+    ${isOpen ? `
+    <div class="card-body" style="border-top-color:${t.border}">
+      <div class="grid2">
+        <div>
+          <div class="block"><div class="blk-label">Company Overview</div><ul class="blk-list">${c.overview.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+          <div class="block"><div class="blk-label">Funding & Scale</div><ul class="blk-list">${c.funding.map(x=>`<li>${x}</li>`).join('')}</ul>${ev(c.fundingEv)}</div>
+          <div class="block"><div class="blk-label">Products & Expansion</div><ul class="blk-list">${c.expansion.map(x=>`<li>${x}</li>`).join('')}</ul>${ev(c.expansionEv)}</div>
+        </div>
+        <div>
+          <div class="block"><div class="blk-label">Capacity Gap & Pain Points</div><ul class="blk-list">${c.gap.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+          <div class="block"><div class="blk-label">Why This Company, Why Now</div><p class="blk-text">${c.why}</p></div>
+          <div class="block"><div class="blk-label">What Blue Waters Would Supply</div><p class="blk-offering">${c.fit}</p></div>
+        </div>
+      </div>
+      <div class="new-divider">
+        <div class="new-divider-label">Additional Intelligence</div>
+        <div class="grid2">
+          <div class="ns-box ns-supply">
+            <div class="ns-label" style="color:#2563eb">Supply Chain Intelligence</div>
+            <div style="margin-bottom:8px">${c.supply.signals.map(s=>{const[cls,lbl]=SIGNAL_MAP[s]||['tag-gray',s];return`<span class="supply-tag ${cls}">${lbl}</span>`}).join('')}</div>
+            <div class="ds">Current Sourcing: <span>${c.supply.currentSourcing}</span></div>
+            <div class="ds">BWG Advantage: <span>${c.supply.bwgAdvantage}</span></div>
+            <div class="ds" style="margin-bottom:8px">Compliance: <span>${c.supply.complianceMatch}</span></div>
+            <ul class="blk-list">${c.supply.riskNotes.map(r=>`<li style="font-size:12px;color:#475569">${r}</li>`).join('')}</ul>
+          </div>
+          <div class="ns-box ns-summary">
+            <div class="ns-label" style="color:#d97706">Summary</div>
+            <p class="summary-text">${c.summary}</p>
+          </div>
+        </div>
+        <div class="ns-box ns-source">
+          <div class="ns-label" style="color:#6b7280">Sources</div>
+          <ul class="src-list">
+            ${c.sources.map(s=>`<li><div class="src-dot"></div><div>${s.u&&s.u!=='#'?`<a href="${s.u}" target="_blank" rel="noopener noreferrer" style="font-weight:600;color:#2563eb;margin-right:6px;text-decoration:none;border-bottom:1px solid #bfdbfe">${s.l} ↗</a>`:`<span style="font-weight:600;color:#111;margin-right:6px">${s.l}</span>`}<span class="src-tag ${s.t==='p'?'st-p':s.t==='s'?'st-s':'st-i'}">${s.t==='p'?'Primary':s.t==='s'?'Secondary':'Inferred'}</span><span style="margin-left:6px;color:#6b7280">— ${s.n}</span></div></li>`).join('')}
+          </ul>
+          <div class="src-legend">
+            <span class="src-tag st-p" style="margin-right:4px">PRIMARY</span>Direct source &nbsp;
+            <span class="src-tag st-s" style="margin-right:4px">SECONDARY</span>Aggregated/reported &nbsp;
+            <span class="src-tag st-i" style="margin-right:4px">INFERRED</span>Derived signal
+          </div>
+        </div>
+      </div>
+    </div>` : ''}
+  </div>`;
+}
+
+function ev(items) {
+  if (!items||!items.length) return '';
+  return `<div class="evidence">${items.map(e=>`<div class="ev-item"><span class="ev-quote">"${e.q}"</span><br><span class="ev-source">— ${e.s}</span>${e.u&&e.u!=='#'?` <a href="${e.u}" target="_blank" class="ev-link">[source ↗]</a>`:''}</div>`).join('')}</div>`;
+}
+
+function setTier(v) { currentTier=v; renderAll(); }
+function toggleCard(name) { if(openSet.has(name)) openSet.delete(name); else openSet.add(name); renderAll(); }
+</script>
 </body>
 </html>
