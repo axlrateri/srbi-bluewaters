@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SRBI — Blue Waters General Trading</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-deep: #0a1628; --bg-card: #111d33; --bg-card-hover: #162544; --bg-surface: #0d1f3c;
+      --text-primary: #e8ecf4; --text-secondary: #8899b4; --text-muted: #5a6d8a;
+      --accent-blue: #2d8cf0; --accent-teal: #0cc8aa; --accent-gold: #f0a830; --border: #1c2e4a;
+      --tier1: #ef4444; --tier1-bg: rgba(239,68,68,0.08); --tier1-border: rgba(239,68,68,0.25);
+      --tier2: #f59e0b; --tier2-bg: rgba(245,158,11,0.08); --tier2-border: rgba(245,158,11,0.25);
+      --tier3: #3b82f6; --tier3-bg: rgba(59,130,246,0.08); --tier3-border: rgba(59,130,246,0.25);
+      --tier4: #6b7280; --tier4-bg: rgba(107,114,128,0.08); --tier4-border: rgba(107,114,128,0.25);
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg-deep); color: var(--text-primary); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    .mono { font-family: 'DM Mono', monospace; }
+    .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0a1628 0%, #0d2847 50%, #0a1628 100%); position: relative; overflow: hidden; }
+    .login-container::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at 30% 20%, rgba(45,140,240,0.06) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(12,200,170,0.04) 0%, transparent 50%); animation: drift 20s ease-in-out infinite; }
+    @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-2%, 1%); } }
+    .login-box { position: relative; z-index: 1; width: 100%; max-width: 420px; padding: 48px 40px; background: rgba(17,29,51,0.85); border: 1px solid var(--border); border-radius: 16px; backdrop-filter: blur(20px); box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
+    .login-logo { text-align: center; margin-bottom: 32px; }
+    .login-logo .logo-mark { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .login-logo .wave-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .login-logo h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); }
+    .login-logo .subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+    .login-divider { height: 1px; background: var(--border); margin: 24px 0; }
+    .login-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .login-input { width: 100%; padding: 14px 16px; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    .login-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(45,140,240,0.15); }
+    .login-input::placeholder { color: var(--text-muted); }
+    .login-btn { width: 100%; padding: 14px; margin-top: 20px; background: linear-gradient(135deg, var(--accent-blue), #1a6dd4); color: white; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+    .login-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(45,140,240,0.3); }
+    .login-error { margin-top: 12px; padding: 10px 14px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; color: #f87171; font-size: 13px; text-align: center; }
+    .login-footer { margin-top: 28px; text-align: center; font-size: 11px; color: var(--text-muted); }
+    .dossier-container { min-height: 100vh; background: var(--bg-deep); }
+    .dossier-header { background: var(--bg-surface); border-bottom: 1px solid var(--border); padding: 20px 32px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(16px); }
+    .header-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header-logo { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .header-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+    .header-title span { color: var(--text-secondary); font-weight: 400; margin-left: 6px; }
+    .header-right { display: flex; align-items: center; gap: 20px; }
+    .header-meta { font-size: 12px; color: var(--text-muted); }
+    .header-meta strong { color: var(--text-secondary); font-weight: 500; }
+    .logout-btn { padding: 6px 14px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .logout-btn:hover { border-color: var(--tier1); color: var(--tier1); }
+    .hero { max-width: 1280px; margin: 0 auto; padding: 48px 32px 32px; }
+    .hero h2 { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 8px; }
+    .hero h2 .gradient-text { background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero .hero-sub { font-size: 15px; color: var(--text-secondary); max-width: 680px; line-height: 1.6; }
+    .stats-bar { max-width: 1280px; margin: 0 auto; padding: 0 32px 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .stat-pill { padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+    .stat-pill strong { color: var(--text-primary); font-weight: 600; }
+    .market-alert { max-width: 1280px; margin: 0 auto 24px; padding: 0 32px; }
+    .alert-box { padding: 16px 20px; background: rgba(240,168,48,0.06); border: 1px solid rgba(240,168,48,0.2); border-radius: 10px; display: flex; gap: 12px; align-items: flex-start; }
+    .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .alert-content h4 { font-size: 13px; font-weight: 600; color: var(--accent-gold); margin-bottom: 4px; }
+    .alert-content p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; }
+    .filters { max-width: 1280px; margin: 0 auto; padding: 0 32px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn { padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .filter-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+    .filter-btn.active { background: rgba(45,140,240,0.12); border-color: var(--accent-blue); color: var(--accent-blue); }
+    .filter-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: rgba(255,255,255,0.08); font-size: 11px; margin-left: 6px; }
+    .filter-btn.active .filter-count { background: rgba(45,140,240,0.2); }
+    .companies-grid { max-width: 1280px; margin: 0 auto; padding: 0 32px 64px; display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .company-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s; }
+    .company-card:hover { border-color: var(--accent-blue); box-shadow: 0 8px 32px rgba(0,0,0,0.3); transform: translateY(-2px); }
+    .card-header { padding: 20px 24px 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .card-title-area { flex: 1; }
+    .card-title-area h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
+    .card-title-area .card-location { font-size: 13px; color: var(--text-muted); }
+    .tier-badge { padding: 4px 10px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+    .tier-badge.t1 { background: var(--tier1-bg); color: var(--tier1); border: 1px solid var(--tier1-border); }
+    .tier-badge.t2 { background: var(--tier2-bg); color: var(--tier2); border: 1px solid var(--tier2-border); }
+    .tier-badge.t3 { background: var(--tier3-bg); color: var(--tier3); border: 1px solid var(--tier3-border); }
+    .tier-badge.t4 { background: var(--tier4-bg); color: var(--tier4); border: 1px solid var(--tier4-border); }
+    .card-body { padding: 16px 24px 20px; }
+    .card-overview { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
+    .card-signals { display: flex; flex-direction: column; gap: 10px; }
+    .signal-row { display: flex; gap: 10px; }
+    .signal-label { flex-shrink: 0; width: 110px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
+    .signal-value { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+    .card-divider { height: 1px; background: var(--border); margin: 14px 0; }
+    .card-footer { padding: 0 24px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .card-website { font-size: 12px; color: var(--accent-blue); text-decoration: none; font-family: 'DM Mono', monospace; transition: color 0.2s; }
+    .card-website:hover { color: var(--accent-teal); }
+    .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .card-tag { padding: 3px 8px; background: rgba(45,140,240,0.08); border: 1px solid rgba(45,140,240,0.15); border-radius: 4px; font-size: 11px; color: var(--accent-blue); font-family: 'DM Mono', monospace; }
+    @media (max-width: 768px) { .hero h2 { font-size: 24px; } .hero, .stats-bar, .filters, .companies-grid, .market-alert { padding-left: 16px; padding-right: 16px; } .dossier-header { padding: 14px 16px; } .header-meta { display: none; } .card-header { padding: 16px 16px 0; } .card-body { padding: 12px 16px 16px; } .card-footer { padding: 0 16px 16px; } .signal-label { width: 90px; } .login-box { margin: 16px; padding: 32px 24px; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-up { animation: fadeUp 0.5s ease-out forwards; opacity: 0; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const config = {
+      clientName: "Blue Waters General Trading L.L.C",
+      clientShort: "Blue Waters",
+      allowedDomains: ["@axlrate.com", "@bluewatersllcdubai.com"],
+      reportDate: "March 18, 2026",
+      companiesScanned: "~150+",
+      market: "United States",
+      builtBy: "Axlrate",
+    };
+    const companies = [
+      { id:1, name:"Baywatch Seafood Inc.", location:"Perth Amboy, NJ", website:"baywatchseafood.com", tier:1, tierLabel:"T1 \u2014 Immediate", overview:"Direct importer of frozen seafood from Asia (India, Sri Lanka, Thailand, Indonesia, Taiwan). Est. 2009. Small team serving North American market. Specializes in shrimp, squid, octopus. 2,400+ bills of lading on record. Est. revenue $50M\u2013$100M annually.", capacityGap:"Small company heavily dependent on Asian sourcing network \u2014 profile most disrupted by India tariffs. Limited supplier diversification across origins.", recentTrigger:"58% US tariff on Indian shrimp directly impacts primary sourcing region. Must diversify or absorb cost. Active import volume (~45 shipments/90 days) shows continued buying \u2014 needs alternatives now.", offeringFit:"BWG supplies vannamei (HOSO, PDTO, PD), black tiger, squid, octopus \u2014 direct product overlap. Multi-origin sourcing (Vietnam, Indonesia, Thailand) gives tariff flexibility. Container-scale with mixed SKUs.", tags:["shrimp","squid","Asia-sourced","NJ port"] },
+      { id:2, name:"Ocean Frost Corp.", location:"Newark, NJ", website:"oceanfrost.com", tier:1, tierLabel:"T1 \u2014 Immediate", overview:"Established buyer, trader, importer, and seller of frozen seafood. Strong financial position with substantial credit lines. Wide selection: shrimp, lobster, crab, scallops, squid, octopus, mussels, clams, finned fish.", capacityGap:"Constantly seeking new products and markets. Mid-size importer with dual role as importer and distributor. Needs competitive multi-origin sourcing.", recentTrigger:"India tariff disruption forces shrimp sourcing recalibration. Product breadth means multiple lines overlap with BWG catalogue.", offeringFit:"BWG covers nearly their entire frozen portfolio \u2014 vannamei, black tiger, squid (whole/tubes/rings), octopus, mussels, scallops. Competitive multi-origin pricing and mixed containers.", tags:["full-line","importer-distributor","NJ port"] },
+      { id:3, name:"Jomara Seafood", location:"Miami, FL", website:"jomaraseafood.com", tier:1, tierLabel:"T1 \u2014 Immediate", overview:"One of the largest importers and full-line distributors of frozen seafood in the US. Founded 1987. HACCP and EU compliant. Large supply network. Distribution center in Miami.", capacityGap:"Full-line distributor needing consistent containerized supply across multiple species. Miami is gateway port.", recentTrigger:"Tariff-driven supply chain disruption. As a large full-line distributor, any shrimp supply gap creates immediate procurement pressure.", offeringFit:"BWG\u2019s HACCP certification, USFDA compliance, multi-species catalogue, and 40\u2019 FCL reefer delivery aligns with Jomara\u2019s import model.", tags:["full-line","HACCP","Miami port","large-scale"] },
+      { id:4, name:"Premium Seafood Company", location:"New Jersey", website:"premiumseafood.com", tier:1, tierLabel:"T1 \u2014 Immediate", overview:"Wholesale company dedicated to sourcing best quality shrimp and frozen seafood at competitive prices. Serves wholesalers, foodservice, supermarkets, national restaurant chains.", capacityGap:"Concentrates on consistently available product lines from reputable packers. Small operation focused on shrimp.", recentTrigger:"India tariff directly hits their shrimp-centric business model. Needs new packer relationships for consistent supply.", offeringFit:"BWG\u2019s core strength is shrimp (vannamei HOSO, PDTO, PD, cooked + black tiger) from multiple certified factories. Exact value prop match.", tags:["shrimp-focused","wholesale","NJ"] },
+      { id:5, name:"Wild N Farm Seafood Trading", location:"Miami, FL", website:"wildnfarmseafood.com", tier:2, tierLabel:"T2 \u2014 This Month", overview:"Miami-based seafood trading company. 40 years across New Orleans, Florida Keys, Yucatan, Bahamas, Spain, Ecuador. Family of chefs. Experts in grading and packing.", capacityGap:"Small operation leveraging global connections. Long-standing relationships but limited Asia sourcing depth.", recentTrigger:"India tariff shakeup creates opportunity for new Asian sourcing partnerships. Trader-to-trader model aligns.", offeringFit:"BWG\u2019s mixed-container capability, quality grading, and 10+ sourcing countries complements their Americas-focused network.", tags:["trading","Miami","Americas-focused"] },
+      { id:6, name:"American Seafood Imports / Niamar", location:"New Jersey & Connecticut", website:"americanseafoodimports.com", tier:2, tierLabel:"T2 \u2014 This Month", overview:"Decades-old frozen seafood importer serving wholesalers and distributors across the East Coast (NY, NJ, CT, MA, PA, MD, VA, NC, SC, GA, FL, Chicago).", capacityGap:"East Coast coverage is wide but sourcing concentrated in Americas + limited Asia. Small team, massive footprint.", recentTrigger:"Already imports from Asia \u2014 India tariff disrupts that leg. East Coast distribution with port access at NY/NJ and Miami.", offeringFit:"BWG supplies shrimp, lobster tails, fish products they already distribute. Adding Vietnam/Thailand/Indonesia source diversifies Asia book.", tags:["East Coast","multi-state","lobster tails"] },
+      { id:7, name:"Seafood Wholesalers", location:"Houston, TX", website:"seafoodwholesalers.com", tier:2, tierLabel:"T2 \u2014 This Month", overview:"Vertically integrated wholesale seafood company. Production, inventory management and logistics with global partnerships. 100+ years combined team experience. Serves Texas.", capacityGap:"Regional Texas distributor with global sourcing ambition but limited international reach. Houston port is major US entry point.", recentTrigger:"Growing business in seafood-hungry Gulf Coast market. Houston port proximity makes containerized imports cost-efficient.", offeringFit:"BWG\u2019s reefer container delivery to Houston port, mixed SKU containers, and multi-species catalogue fits their expansion needs.", tags:["Houston port","regional","vertically integrated"] },
+      { id:8, name:"Walprice Seafood Wholesale", location:"Houston, TX", website:"walprice.com", tier:2, tierLabel:"T2 \u2014 This Month", overview:"Houston seafood distributor operating since 2008. Fresh and frozen seafood for Houston and surrounding area. Wholesale focus.", capacityGap:"Small-mid distributor. Limited international sourcing capability. Relies on buying from larger importers.", recentTrigger:"Rising wholesale shrimp prices (21% increase) squeeze margins. Direct import relationship could improve position.", offeringFit:"BWG can help bypass intermediaries with direct container imports at Houston port. Shrimp, tilapia, basa, squid.", tags:["Houston","restaurant-supply","direct-import"] },
+      { id:9, name:"Sea Win", location:"Downtown Los Angeles, CA", website:"seawin.com", tier:3, tierLabel:"T3 \u2014 Strategic", overview:"Full-service fresh, frozen and live seafood distributor. Est. 1983. One-stop shop for distributors, markets, restaurants. Chinese, Vietnamese, Spanish speaking staff.", capacityGap:"LA-based with Asian community connections. Serves ethnic markets needing consistent frozen supply.", recentTrigger:"LA is second-largest US port for seafood imports. Ethnic retail and restaurant demand for Asian-sourced frozen seafood is strong.", offeringFit:"BWG\u2019s catalogue includes ethnic market items: pomfret, milk fish, seer fish, tilapia, squid, black tiger, cuttlefish.", tags:["ethnic-market","LA port","multilingual"] },
+      { id:10, name:"P&D Seafood Company", location:"Los Angeles, CA", website:"pdseafood.com", tier:3, tierLabel:"T3 \u2014 Strategic", overview:"One of the largest seafood importers and distributors in Los Angeles. Operating since 1985. Fresh and frozen products for restaurants.", capacityGap:"Large LA operation concentrated in restaurant/foodservice. Needs reliable containerized frozen supply.", recentTrigger:"India tariff impact on shrimp pricing. LA market competition requires competitive sourcing.", offeringFit:"BWG\u2019s shrimp range (especially P&D forms) and fish fillets (salmon, basa, tilapia) fit restaurant supply needs.", tags:["LA","restaurant-focused","large-importer"] },
+      { id:11, name:"Crocker & Winsor Seafoods", location:"Boston, MA", website:"crockerwinsor.com", tier:3, tierLabel:"T3 \u2014 Strategic", overview:"Wholesale distributor of frozen fish and seafood. 115+ years in business. Over 600 different seafood items. Global sourcing contacts.", capacityGap:"Massive catalogue (600+ items) requires deep supplier network. Boston is a major US seafood hub.", recentTrigger:"600+ SKUs means constant supplier search. Tariff disruption creates entry points in shrimp and Asian seafood.", offeringFit:"BWG\u2019s breadth (shrimp, lobster, crab, fish, squid, cuttlefish, octopus, scallops, mussels) fills multiple SKU gaps.", tags:["Boston","600+ SKUs","legacy"] },
+      { id:12, name:"Ocean Seafood Depot", location:"Newark, NJ", website:"oceanseafood.com", tier:4, tierLabel:"T4 \u2014 Pipeline", overview:"One of the longest-established seafood distributors in NJ. 30 trucks, six-day delivery to NY, NJ, PA. Imports from Portugal, Spain, Morocco. Since 1998.", capacityGap:"Strong local distribution but import sourcing is Europe/Morocco focused. Limited Asia sourcing.", recentTrigger:"Expanding frozen wholesale department. Restaurant + supermarket + hotel clients need consistent frozen supply.", offeringFit:"BWG adds Asian-sourced frozen products (shrimp, squid, tilapia, basa) to complement European import book.", tags:["NJ","30-truck fleet","Europe-focused"] },
+      { id:13, name:"Manny\u2019s Seafood", location:"Miami, FL (South Florida)", website:"mannysseafood.com", tier:4, tierLabel:"T4 \u2014 Pipeline", overview:"Family-owned frozen seafood distributor. 40+ years serving South Florida restaurants. Covers Miami-Dade, Monroe, Broward, Palm Beach counties.", capacityGap:"Regional distributor, family-owned. Sources globally but relies on few large importers.", recentTrigger:"Competitive pricing pressure from tariff-driven wholesale price increases. Restaurant clients pushing back.", offeringFit:"BWG offers direct supply of shrimp, lobster tails, fish fillets at competitive pricing, bypassing intermediary markup.", tags:["South Florida","family-owned","40+ years"] },
+      { id:14, name:"Prime Seafood Imports", location:"Nationwide (cold storage)", website:"primesfd.com", tier:4, tierLabel:"T4 \u2014 Pipeline", overview:"Major importer of premium farm-raised white shrimp (vannamei). Sources exclusively from South/Central America. 30+ years experience.", capacityGap:"Concentrated in Americas sourcing. No Asia-origin supply. Single-hemisphere risk.", recentTrigger:"Single-origin risk from Americas. Any supply disruption leaves them exposed without Asia backup.", offeringFit:"BWG supplies exact same product \u2014 farm-raised vannamei in all forms from Asia. Geographic diversification play.", tags:["vannamei-specialist","nationwide","Americas-only"] },
+      { id:15, name:"Houston Seafood Company", location:"Houston, TX", website:"houstonseafood.com", tier:4, tierLabel:"T4 \u2014 Pipeline", overview:"Global supply chain management company focused on seafood. Values sustainability, traceability, social responsibility.", capacityGap:"Supply chain management company \u2014 needs reliable upstream suppliers to fulfill customer commitments.", recentTrigger:"Nationwide frozen seafood sourcing demand. Houston port is cost-efficient for BWG\u2019s reefer containers.", offeringFit:"BWG\u2019s traceability (factory-level BRC, USFDA, ISO, SQF), HACCP certification aligns with values-driven positioning.", tags:["supply-chain","Houston port","values-driven"] },
+    ];
+    function LoginScreen({ onLogin }) {
+      const [email, setEmail] = useState('');
+      const [error, setError] = useState('');
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const domain = email.substring(email.indexOf('@'));
+        if (config.allowedDomains.includes(domain.toLowerCase())) {
+          localStorage.setItem('srbi-bw-auth', email);
+          onLogin(email);
+        } else {
+          setError('Access restricted. Please use an authorized email domain.');
+        }
+      };
+      return (
+        React.createElement('div', {className:'login-container'},
+          React.createElement('div', {className:'login-box fade-up'},
+            React.createElement('div', {className:'login-logo'},
+              React.createElement('div', {className:'logo-mark'},
+                React.createElement('div', {className:'wave-icon'}, '\ud83c\udf0a'),
+                React.createElement('h1', null, 'SRBI')
+              ),
+              React.createElement('div', {className:'subtitle'}, 'Secondary Research-Based Intelligence')
+            ),
+            React.createElement('div', {className:'login-divider'}),
+            React.createElement('div', {style:{textAlign:'center',marginBottom:24}},
+              React.createElement('div', {style:{fontSize:14,color:'var(--text-secondary)',fontWeight:500}}, config.clientName),
+              React.createElement('div', {style:{fontSize:12,color:'var(--text-muted)',marginTop:4}}, 'US Market Expansion \u2014 Buyer Intelligence Dossier')
+            ),
+            React.createElement('form', {onSubmit:handleSubmit},
+              React.createElement('label', {className:'login-label'}, 'Work Email'),
+              React.createElement('input', {className:'login-input', type:'email', placeholder:'you@company.com', value:email, onChange:(e)=>{setEmail(e.target.value);setError('');}, required:true, autoFocus:true}),
+              React.createElement('button', {className:'login-btn', type:'submit'}, 'Access Dossier'),
+              error && React.createElement('div', {className:'login-error'}, error)
+            ),
+            React.createElement('div', {className:'login-footer'}, 'Built by ' + config.builtBy + ' \u00b7 Report Date: ' + config.reportDate)
+          )
+        )
+      );
+    }
+    function CompanyCard({ company, index }) {
+      const tierClass = 't' + company.tier;
+      return React.createElement('div', {className:'company-card fade-up', style:{animationDelay:index*0.06+'s'}},
+        React.createElement('div', {className:'card-header'},
+          React.createElement('div', {className:'card-title-area'},
+            React.createElement('h3', null, company.name),
+            React.createElement('div', {className:'card-location'}, company.location)
+          ),
+          React.createElement('div', {className:'tier-badge '+tierClass}, company.tierLabel)
+        ),
+        React.createElement('div', {className:'card-body'},
+          React.createElement('div', {className:'card-overview'}, company.overview),
+          React.createElement('div', {className:'card-signals'},
+            React.createElement('div', {className:'signal-row'},
+              React.createElement('div', {className:'signal-label'}, 'CAPACITY GAP'),
+              React.createElement('div', {className:'signal-value'}, company.capacityGap)
+            ),
+            React.createElement('div', {className:'signal-row'},
+              React.createElement('div', {className:'signal-label'}, 'WHY NOW'),
+              React.createElement('div', {className:'signal-value'}, company.recentTrigger)
+            ),
+            React.createElement('div', {className:'signal-row'},
+              React.createElement('div', {className:'signal-label'}, 'OFFERING FIT'),
+              React.createElement('div', {className:'signal-value'}, company.offeringFit)
+            )
+          )
+        ),
+        React.createElement('div', {className:'card-divider', style:{margin:'0 24px'}}),
+        React.createElement('div', {className:'card-footer'},
+          React.createElement('a', {className:'card-website', href:'https://'+company.website, target:'_blank', rel:'noopener noreferrer'}, '\u2197 '+company.website),
+          React.createElement('div', {className:'card-tags'}, company.tags.map((tag,i) => React.createElement('span', {className:'card-tag', key:i}, tag)))
+        )
+      );
+    }
+    function Dossier({ onLogout }) {
+      const [filter, setFilter] = useState('all');
+      const filtered = filter === 'all' ? companies : companies.filter(c => c.tier === parseInt(filter));
+      const tierCounts = [1,2,3,4].map(t => companies.filter(c => c.tier === t).length);
+      const tierInfo = [{tier:'1',label:'Immediate',color:'var(--tier1)'},{tier:'2',label:'This Month',color:'var(--tier2)'},{tier:'3',label:'Strategic',color:'var(--tier3)'},{tier:'4',label:'Pipeline',color:'var(--tier4)'}];
+      return React.createElement('div', {className:'dossier-container'},
+        React.createElement('div', {className:'dossier-header'},
+          React.createElement('div', {className:'header-inner'},
+            React.createElement('div', {className:'header-left'},
+              React.createElement('div', {className:'header-logo'}, '\ud83c\udf0a'),
+              React.createElement('div', {className:'header-title'}, 'SRBI ', React.createElement('span', null, '\u2014 ' + config.clientShort))
+            ),
+            React.createElement('div', {className:'header-right'},
+              React.createElement('div', {className:'header-meta'}, React.createElement('strong', null, config.market), ' \u00b7 ' + config.reportDate),
+              React.createElement('button', {className:'logout-btn', onClick:onLogout}, 'Sign Out')
+            )
+          )
+        ),
+        React.createElement('div', {className:'hero fade-up'},
+          React.createElement('h2', null, React.createElement('span', {className:'gradient-text'}, 'US Market'), ' Buyer Intelligence'),
+          React.createElement('p', {className:'hero-sub'}, companies.length + ' companies identified with buying alignment for ' + config.clientShort + '\'s frozen seafood catalogue across major US importing hubs. Tiered by intent strength and timing.')
+        ),
+        React.createElement('div', {className:'stats-bar'},
+          React.createElement('div', {className:'stat-pill'}, '\ud83d\udcca ', React.createElement('span', null, 'Scanned ', React.createElement('strong', null, config.companiesScanned), ' companies')),
+          React.createElement('div', {className:'stat-pill'}, '\ud83c\udfaf ', React.createElement('span', null, 'Shortlisted ', React.createElement('strong', null, companies.length))),
+          React.createElement('div', {className:'stat-pill'}, '\ud83d\udccd ', React.createElement('span', null, 'Hubs: ', React.createElement('strong', null, 'NY/NJ \u00b7 Miami \u00b7 Houston \u00b7 LA \u00b7 Boston'))),
+          React.createElement('div', {className:'stat-pill'}, '\ud83d\udce6 ', React.createElement('span', null, 'Delivery: ', React.createElement('strong', null, "40' FCL Reefer")))
+        ),
+        React.createElement('div', {className:'market-alert'},
+          React.createElement('div', {className:'alert-box'},
+            React.createElement('div', {className:'alert-icon'}, '\u26a1'),
+            React.createElement('div', {className:'alert-content'},
+              React.createElement('h4', null, 'Market Trigger \u2014 US Tariff on Indian Shrimp (~58%)'),
+              React.createElement('p', null, 'India was the #1 shrimp supplier to the US. The 2025 tariff has driven wholesale prices up ~21% and US importers are actively seeking alternative suppliers from Vietnam, Indonesia, Ecuador, and Thailand. BWG\'s multi-origin sourcing capability creates a once-in-a-cycle entry window into the US market.')
+            )
+          )
+        ),
+        React.createElement('div', {className:'filters'},
+          React.createElement('button', {className:'filter-btn '+(filter==='all'?'active':''), onClick:()=>setFilter('all')}, 'All Companies', React.createElement('span', {className:'filter-count'}, companies.length)),
+          tierInfo.map(({tier,label,color}) => React.createElement('button', {key:tier, className:'filter-btn '+(filter===tier?'active':''), onClick:()=>setFilter(tier), style:filter===tier?{borderColor:color,color}:{}}, 'T'+tier+' \u2014 '+label, React.createElement('span', {className:'filter-count'}, tierCounts[tier-1])))
+        ),
+        React.createElement('div', {className:'companies-grid'}, filtered.map((company, idx) => React.createElement(CompanyCard, {key:company.id, company, index:idx})))
+      );
+    }
+    function App() {
+      const [user, setUser] = useState(null);
+      useEffect(() => {
+        const saved = localStorage.getItem('srbi-bw-auth');
+        if (saved) {
+          const domain = saved.substring(saved.indexOf('@'));
+          if (config.allowedDomains.includes(domain.toLowerCase())) setUser(saved);
+        }
+      }, []);
+      const handleLogout = () => { localStorage.removeItem('srbi-bw-auth'); setUser(null); };
+      if (!user) return React.createElement(LoginScreen, {onLogin:setUser});
+      return React.createElement(Dossier, {onLogout:handleLogout});
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
+</body>
+</html>
