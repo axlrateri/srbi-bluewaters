@@ -481,7 +481,7 @@ function doLogin() {
   if (!email) { err.textContent = 'Please enter your email'; err.style.display='block'; return; }
   const domain = email.toLowerCase();
   if (!domain.endsWith('@axlrate.com') && !domain.endsWith('@bluewatersllcdubaitest.com')) {
-    err.textContent = 'Access restricted to @axlrate.com and @bluewatersllcdubaitest.com accounts';
+    err.textContent = 'Access restricted';
     err.style.display='block'; return;
   }
   btn.disabled = true; btn.textContent = 'Authenticating...';
